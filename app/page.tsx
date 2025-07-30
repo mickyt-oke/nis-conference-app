@@ -1,402 +1,303 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Database, FileText, Globe, Users, Lock, Smartphone, ChevronRight, Calendar } from "lucide-react"
 import { Layout } from "@/components/layout"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { ConferenceDestination } from "@/components/conference-destination"
 import { ContactSection } from "@/components/contact-section"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Calendar,
+  Users,
+  FileText,
+  Camera,
+  ArrowRight,
+  CheckCircle,
+  Globe,
+  Shield,
+  Award,
+  Clock,
+  MapPin,
+  Star,
+} from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+
+const heroImages = [
+  "/placeholder.svg?height=600&width=1200&text=Conference+Hall",
+  "/placeholder.svg?height=600&width=1200&text=Networking+Event",
+  "/placeholder.svg?height=600&width=1200&text=Keynote+Speaker",
+  "/placeholder.svg?height=600&width=1200&text=Panel+Discussion",
+  "/placeholder.svg?height=600&width=1200&text=Awards+Ceremony",
+]
+
+const features = [
+  {
+    icon: Calendar,
+    title: "Conference Management",
+    description: "Comprehensive conference planning and management system",
+    href: "/conferences",
+  },
+  {
+    icon: Users,
+    title: "Speaker Profiles",
+    description: "Detailed profiles of keynote speakers and industry experts",
+    href: "/speakers",
+  },
+  {
+    icon: FileText,
+    title: "Document Center",
+    description: "Access conference materials, presentations, and resources",
+    href: "/documents",
+  },
+  {
+    icon: Camera,
+    title: "Media Gallery",
+    description: "Photo galleries and video content from past events",
+    href: "/gallery",
+  },
+]
+
+const stats = [
+  { number: "200+", label: "Registered Participants", icon: Users },
+  { number: "50+", label: "Expert Speakers", icon: Award },
+  { number: "25+", label: "Stakeholders Represented", icon: Globe },
+  { number: "5", label: "Days of Learning", icon: Clock },
+]
+
+const upcomingEvents = [
+  {
+    id: 1,
+    title: "Opening Ceremony & Keynote Address",
+    date: "March 15, 2025",
+    time: "9:00 AM - 11:00 AM",
+    location: "Main Auditorium",
+    speaker: "Hon. Minister of Interior",
+    type: "Keynote",
+  },
+  {
+    id: 2,
+    title: "Digital Immigration Systems Panel",
+    date: "March 15, 2025",
+    time: "2:00 PM - 4:00 PM",
+    location: "Conference Hall A",
+    speaker: "Tech Industry Leaders",
+    type: "Panel",
+  },
+  {
+    id: 3,
+    title: "Border Security Workshop",
+    date: "March 16, 2025",
+    time: "10:00 AM - 12:00 PM",
+    location: "Workshop Room 1",
+    speaker: "Security Experts",
+    type: "Workshop",
+  },
+]
 
 export default function HomePage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
-  const heroImages = [
-    "/placeholder.svg?height=600&width=1200&text=NIS+Headquarters+Building",
-    "/placeholder.svg?height=600&width=1200&text=Border+Control+Operations",
-    "/placeholder.svg?height=600&width=1200&text=Conference+Hall+Session",
-    "/placeholder.svg?height=600&width=1200&text=Passport+Services+Center",
-  ]
-
   useEffect(() => {
-    // Simulate loading time
-    const loadingTimer = setTimeout(() => {
+    // Simulate loading
+    const timer = setTimeout(() => {
       setIsLoading(false)
     }, 2000)
 
-    const slideTimer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroImages.length)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1))
     }, 5000)
 
-    return () => {
-      clearTimeout(loadingTimer)
-      clearInterval(slideTimer)
-    }
-  }, [heroImages.length])
-
-  const galleryCategories = [
-    {
-      id: "conferences",
-      name: "Conferences",
-      images: [
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Annual+Conference+2024",
-          title: "Annual Conference 2024",
-          description: "Opening ceremony with key stakeholders and immigration officials",
-          date: "2024-03-15",
-          category: "conferences",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Keynote+Speaker",
-          title: "Keynote Address",
-          description: "Minister delivering keynote on immigration policy reforms",
-          date: "2024-03-16",
-          category: "conferences",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Panel+Discussion",
-          title: "Expert Panel Discussion",
-          description: "Regional immigration experts discussing border security",
-          date: "2024-03-17",
-          category: "conferences",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Awards+Ceremony",
-          title: "Excellence Awards",
-          description: "Recognition ceremony for outstanding service members",
-          date: "2024-03-18",
-          category: "conferences",
-        },
-      ],
-    },
-    {
-      id: "training",
-      name: "Training",
-      images: [
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Skills+Development",
-          title: "Professional Development Workshop",
-          description: "Advanced training on document verification techniques",
-          date: "2024-02-20",
-          category: "training",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Border+Security",
-          title: "Border Security Training",
-          description: "Specialized training for border control officers",
-          date: "2024-02-25",
-          category: "training",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Technology+Training",
-          title: "Technology Integration",
-          description: "Training on new biometric systems and digital processes",
-          date: "2024-03-01",
-          category: "training",
-        },
-      ],
-    },
-    {
-      id: "events",
-      name: "Official Events",
-      images: [
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Ministerial+Visit",
-          title: "Ministerial Visit",
-          description: "Minister of Interior inspecting NIS facilities",
-          date: "2024-01-15",
-          category: "events",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Independence+Day",
-          title: "Independence Day Celebration",
-          description: "NIS participation in national independence celebrations",
-          date: "2023-10-01",
-          category: "events",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Commissioning",
-          title: "New Facility Commissioning",
-          description: "Opening of new passport production center",
-          date: "2024-01-30",
-          category: "events",
-        },
-      ],
-    },
-    {
-      id: "facilities",
-      name: "Facilities",
-      images: [
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Headquarters",
-          title: "NIS Headquarters",
-          description: "Main administrative building in Abuja",
-          date: "2024-01-01",
-          category: "facilities",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Training+Center",
-          title: "Training Academy",
-          description: "State-of-the-art training facilities for officers",
-          date: "2024-01-05",
-          category: "facilities",
-        },
-        {
-          src: "/placeholder.svg?height=300&width=400&text=Border+Post",
-          title: "Border Control Point",
-          description: "Modern border checkpoint with advanced screening",
-          date: "2024-01-10",
-          category: "facilities",
-        },
-      ],
-    },
-  ]
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <Layout showLoading={isLoading}>
-      {/* Hero Section with Background Carousel and Countdown */}
-      <section className="relative h-[700px] flex items-center justify-center overflow-hidden">
+      {/* Hero Section with Background Carousel */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Carousel */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 z-0">
           {heroImages.map((image, index) => (
             <div
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentSlide ? "opacity-100" : "opacity-0"
+                index === currentImageIndex ? "opacity-100" : "opacity-0"
               }`}
             >
-              <img
+              <Image
                 src={image || "/placeholder.svg"}
-                alt={`NIS Background ${index + 1}`}
-                className="w-full h-full object-cover"
+                alt={`Conference scene ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
               />
-              <div className="absolute inset-0 bg-green-900/70" />
             </div>
           ))}
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center text-white px-4 max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-8 items-center">
-            <div className="lg:col-span-2">
-              <Badge variant="secondary" className="mb-4 bg-white/20 text-white border-white/30">
-                Version 1.0 - Conference Management System
-              </Badge>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Nigeria Immigration Service Conference Website</h1>
-              <p className="text-xl md:text-2xl mb-8 text-green-100">
-                A comprehensive digital platform for managing annual conferences, archiving proceedings, and enhancing
-                institutional knowledge management.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-green-800 hover:bg-green-50">
-                  Explore Platform <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-green-800 bg-transparent"
-                >
-                  View Documentation
-                </Button>
-              </div>
-            </div>
-
-            {/* Countdown Timer */}
-            <div className="lg:col-span-1">
-              <CountdownTimer targetDate="2024-06-15T09:00:00" eventName="Annual Strategic Conference 2024" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Key Benefits Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Key Benefits</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Transforming conference management through digital innovation and systematic documentation
+        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
+          <div className="mb-8">
+            <Badge className="bg-green-600 hover:bg-green-700 text-white mb-4">Annual Conference 2024</Badge>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Nigeria Immigration Service
+              <span className="block text-green-400">Conference Management</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">
+              Advancing Immigration Excellence Through Innovation, Collaboration, and Professional Development
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Database,
-                title: "Centralized Repository",
-                description: "Unified storage and retrieval of all conference materials and documentation",
-              },
-              {
-                icon: FileText,
-                title: "Historical Archiving",
-                description: "Systematic preservation of past conference proceedings and materials",
-              },
-              {
-                icon: Globe,
-                title: "Real-time Sharing",
-                description: "Live information sharing during conference events and sessions",
-              },
-              {
-                icon: Users,
-                title: "Participant Management",
-                description: "Digital attendance tracking and comprehensive participant management",
-              },
-              {
-                icon: Lock,
-                title: "Secure Access",
-                description: "Role-based authentication with secure document repository and version control",
-              },
-              {
-                icon: Smartphone,
-                title: "Mobile Responsive",
-                description: "Optimized interface for all devices with seamless user experience",
-              },
-            ].map((benefit, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <benefit.icon className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                  <CardTitle className="text-xl">{benefit.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">{benefit.description}</CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Conference Gallery</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Visual documentation of our conferences, training sessions, and official events
-            </p>
+          {/* Countdown Timer */}
+          <div className="mb-8">
+            <CountdownTimer />
           </div>
 
-          <Tabs defaultValue="conferences" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              {galleryCategories.map((category) => (
-                <TabsTrigger key={category.id} value={category.id}>
-                  {category.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {galleryCategories.map((category) => (
-              <TabsContent key={category.id} value={category.id} className="mt-8">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {category.images.map((image, index) => (
-                    <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-video relative overflow-hidden">
-                        <img
-                          src={image.src || "/placeholder.svg"}
-                          alt={image.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <CardContent className="p-4">
-                        <Badge variant="secondary" className="mb-2 text-xs">
-                          {category.name}
-                        </Badge>
-                        <h3 className="font-semibold text-sm mb-2">{image.title}</h3>
-                        <p className="text-xs text-gray-600 mb-2">{image.description}</p>
-                        <p className="text-xs text-gray-500">{image.date}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-
-          <div className="text-center mt-8">
-            <Link href="/gallery">
-              <Button variant="outline" size="lg">
-                View Full Gallery <ChevronRight className="ml-2 h-5 w-5" />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register">
+              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-3">
+                Register Now
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/conferences">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 bg-transparent"
+              >
+                View Program
               </Button>
             </Link>
           </div>
         </div>
+
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+          {heroImages.map((_, index) => (
+            <button
+              key={index}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentImageIndex ? "bg-white" : "bg-white/50"
+              }`}
+              onClick={() => setCurrentImageIndex(index)}
+            />
+          ))}
+        </div>
       </section>
 
-      {/* Recent Conferences */}
+      {/* Stats Section */}
+      <section className="py-16 bg-green-600 text-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="flex justify-center mb-4">
+                  <stat.icon className="h-8 w-8" />
+                </div>
+                <div className="text-3xl font-bold mb-2">{stat.number}</div>
+                <div className="text-green-100">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Conferences</h2>
-            <p className="text-xl text-gray-600">Latest conference activities and upcoming events</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Conference Management Features</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explore our comprehensive platform designed to enhance your conference experience
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Annual Strategic Planning Conference 2024",
-                date: "March 15-18, 2024",
-                location: "Abuja, Nigeria",
-                status: "Completed",
-                attendees: 250,
-                description:
-                  "Comprehensive strategic planning session focusing on immigration policy reforms and digital transformation initiatives.",
-              },
-              {
-                title: "Border Security Enhancement Summit",
-                date: "April 10-12, 2024",
-                location: "Lagos, Nigeria",
-                status: "Upcoming",
-                attendees: 180,
-                description:
-                  "Technical conference on advanced border security technologies and international cooperation frameworks.",
-              },
-              {
-                title: "Training and Development Workshop",
-                date: "May 5-7, 2024",
-                location: "Port Harcourt, Nigeria",
-                status: "Registration Open",
-                attendees: 120,
-                description:
-                  "Professional development workshop for immigration officers focusing on customer service and modern processing techniques.",
-              },
-            ].map((conference, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <Link key={index} href={feature.href}>
+                <Card className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer group">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+                      <feature.icon className="h-8 w-8 text-green-600" />
+                    </div>
+                    <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-center">{feature.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Upcoming Conference Events</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Don't miss these exciting sessions and networking opportunities
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {upcomingEvents.map((event) => (
+              <Card key={event.id} className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge
-                      variant={
-                        conference.status === "Completed"
-                          ? "secondary"
-                          : conference.status === "Upcoming"
-                            ? "default"
-                            : "outline"
-                      }
-                    >
-                      {conference.status}
-                    </Badge>
-                    <Calendar className="h-5 w-5 text-gray-400" />
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge variant={event.type === "Keynote" ? "default" : "secondary"}>{event.type}</Badge>
+                    <div className="flex items-center text-yellow-500">
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                    </div>
                   </div>
-                  <CardTitle className="text-lg">{conference.title}</CardTitle>
-                  <CardDescription>
-                    {conference.date} • {conference.location}
-                  </CardDescription>
+                  <CardTitle className="text-lg">{event.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">{conference.description}</p>
-                  <div className="flex justify-between items-center text-sm text-gray-500">
-                    <span>{conference.attendees} Attendees</span>
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>{event.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      <span>{event.speaker}</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link href="/conferences">
+              <Button className="bg-green-600 hover:bg-green-700">
+                View Full Program
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -406,6 +307,37 @@ export default function HomePage() {
 
       {/* Contact Section */}
       <ContactSection />
+
+      {/* Call to Action */}
+      <section className="py-16 bg-green-600 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <Shield className="h-16 w-16 mx-auto mb-6" />
+            <h2 className="text-3xl font-bold mb-4">Join the Future of Immigration Services</h2>
+            <p className="text-xl mb-8 text-green-100">
+              Be part of Nigeria's premier Immigration conference. Network with industry leaders, learn from experts,
+              and contribute to shaping the future of immigration services.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/register">
+                <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8 py-3">
+                  Register Today
+                  <CheckCircle className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/speakers">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-green-600 px-8 py-3 bg-transparent"
+                >
+                  Meet Our Speakers
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </Layout>
   )
 }

@@ -5,197 +5,219 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, MessageSquare, Users, Calendar } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  Send,
+  MessageSquare,
+  Globe,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+} from "lucide-react"
 
 export function ContactSection() {
-  const { toast } = useToast()
   const [isSubscribing, setIsSubscribing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [subscribeEmail, setSubscribeEmail] = useState("")
+  const [email, setEmail] = useState("")
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
+    phone: "",
+    enquiryType: "",
     subject: "",
     message: "",
-    enquiryType: "general",
   })
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!email) {
+      toast.error("Please enter your email address")
+      return
+    }
+
     setIsSubscribing(true)
 
     // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Successfully Subscribed!",
-        description: "You'll receive updates about upcoming conferences and events.",
-      })
-      setSubscribeEmail("")
-      setIsSubscribing(false)
-    }, 1000)
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    toast.success("Successfully subscribed to our newsletter!")
+    setEmail("")
+    setIsSubscribing(false)
   }
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!contactForm.name || !contactForm.email || !contactForm.enquiryType || !contactForm.message) {
+      toast.error("Please fill in all required fields")
+      return
+    }
+
     setIsSubmitting(true)
 
     // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Message Sent Successfully!",
-        description: "We'll get back to you within 24 hours.",
-      })
-      setContactForm({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-        enquiryType: "general",
-      })
-      setIsSubmitting(false)
-    }, 1500)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    toast.success("Your enquiry has been submitted successfully! We'll get back to you within 24 hours.")
+    setContactForm({
+      name: "",
+      email: "",
+      phone: "",
+      enquiryType: "",
+      subject: "",
+      message: "",
+    })
+    setIsSubmitting(false)
   }
 
-  const enquiryTypes = [
-    { value: "general", label: "General Inquiry", icon: MessageSquare },
-    { value: "conference", label: "Conference Registration", icon: Calendar },
-    { value: "speaker", label: "Speaker Application", icon: Users },
-    { value: "technical", label: "Technical Support", icon: Phone },
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: "Email Address",
+      details: ["info@immigration.gov.ng", "conference@immigration.gov.ng"],
+      description: "Send us an email anytime",
+    },
+    {
+      icon: Phone,
+      title: "Phone Numbers",
+      details: ["+234 9 461 2345", "+234 9 461 2346"],
+      description: "Call us during office hours",
+    },
+    {
+      icon: MapPin,
+      title: "Office Address",
+      details: ["Nigeria Immigration Service Headquarters", "Sauka, Airport Road, Abuja, Nigeria"],
+      description: "Visit our main office",
+    },
+    {
+      icon: Clock,
+      title: "Office Hours",
+      details: ["Monday - Friday: 8:00 AM - 5:00 PM", "Saturday: 9:00 AM - 2:00 PM"],
+      description: "We're here to help",
+    },
+  ]
+
+  const socialLinks = [
+    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Globe, href: "#", label: "Website" },
   ]
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <Badge variant="secondary" className="mb-4 bg-green-100 text-green-800">
-            Get in Touch
-          </Badge>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Have questions about our conferences or need assistance? We're here to help you every step of the way.
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Get In Touch With Us</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Have questions about the conference or need assistance? We're here to help. Contact us through any of the
+            channels below or fill out our enquiry form.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Contact Information */}
           <div className="lg:col-span-1">
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Mail className="h-5 w-5 mr-2 text-green-600" />
-                  Contact Information
-                </CardTitle>
-                <CardDescription>Reach out to us through any of these channels</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Address</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Nigeria Immigration Service
-                      <br />
-                      Federal Secretariat Complex
-                      <br />
-                      Shehu Shagari Way, Abuja
-                      <br />
-                      Federal Capital Territory, Nigeria
-                    </p>
-                  </div>
-                </div>
+            <div className="space-y-6">
+              {contactInfo.map((info, index) => (
+                <Card key={index} className="border-l-4 border-l-green-600">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-green-100 p-2 rounded-lg">
+                        <info.icon className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 mb-1">{info.title}</h3>
+                        <p className="text-sm text-gray-500 mb-2">{info.description}</p>
+                        {info.details.map((detail, idx) => (
+                          <p key={idx} className="text-sm text-gray-700">
+                            {detail}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
 
-                <div className="flex items-start space-x-3">
-                  <Phone className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Phone</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Main Line: +234-9-234-5678
-                      <br />
-                      Conference Desk: +234-9-234-5679
-                      <br />
-                      Emergency: +234-9-234-5680
-                    </p>
+              {/* Social Media Links */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Follow Us</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-3">
+                    {socialLinks.map((social, index) => (
+                      <a
+                        key={index}
+                        href={social.href}
+                        className="bg-gray-100 hover:bg-green-100 p-2 rounded-lg transition-colors"
+                        aria-label={social.label}
+                      >
+                        <social.icon className="h-5 w-5 text-gray-600 hover:text-green-600" />
+                      </a>
+                    ))}
                   </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Mail className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Email</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      General: info@immigration.gov.ng
-                      <br />
-                      Conference: conference@immigration.gov.ng
-                      <br />
-                      Support: support@immigration.gov.ng
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Clock className="h-5 w-5 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-gray-900">Office Hours</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Monday - Friday: 8:00 AM - 5:00 PM
-                      <br />
-                      Saturday: 9:00 AM - 2:00 PM
-                      <br />
-                      Sunday: Closed
-                    </p>
-                  </div>
-                </div>
-
-                {/* Newsletter Subscription */}
-                <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-600">
-                  <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
-                    Newsletter Subscription
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Stay updated with conference announcements and immigration news
-                  </p>
-                  <form onSubmit={handleSubscribe} className="space-y-3">
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={subscribeEmail}
-                      onChange={(e) => setSubscribeEmail(e.target.value)}
-                      required
-                      className="text-sm"
-                    />
-                    <Button
-                      type="submit"
-                      className="w-full bg-green-600 hover:bg-green-700 text-sm"
-                      disabled={isSubscribing}
-                    >
-                      {isSubscribing ? "Subscribing..." : "Subscribe to Updates"}
-                    </Button>
-                  </form>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
+          {/* Contact Form and Newsletter */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Newsletter Subscription */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Send className="h-5 w-5 mr-2 text-green-600" />
-                  Send us a Message
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-green-600" />
+                  Subscribe to Our Newsletter
                 </CardTitle>
-                <CardDescription>Fill out the form below and we'll get back to you as soon as possible</CardDescription>
+                <p className="text-sm text-gray-600">
+                  Stay updated with the latest conference news, announcements, and immigration updates.
+                </p>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleContactSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                <form onSubmit={handleSubscribe} className="flex gap-3">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1"
+                    required
+                  />
+                  <Button type="submit" disabled={isSubscribing} className="bg-green-600 hover:bg-green-700">
+                    {isSubscribing ? "Subscribing..." : "Subscribe"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Contact Enquiry Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-green-600" />
+                  Send Us An Enquiry
+                </CardTitle>
+                <p className="text-sm text-gray-600">
+                  Fill out the form below and we'll get back to you within 24 hours.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
                       <Label htmlFor="name">Full Name *</Label>
                       <Input
                         id="name"
@@ -205,77 +227,79 @@ export function ContactSection() {
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address *</Label>
+                    <div>
+                      <Label htmlFor="contact-email">Email Address *</Label>
                       <Input
-                        id="email"
+                        id="contact-email"
                         type="email"
                         value={contactForm.email}
                         onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                        placeholder="Enter your email address"
+                        placeholder="Enter your email"
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="enquiry-type">Enquiry Type</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {enquiryTypes.map((type) => (
-                        <label
-                          key={type.value}
-                          className={`cursor-pointer rounded-lg border-2 p-3 text-center transition-all hover:border-green-300 ${
-                            contactForm.enquiryType === type.value ? "border-green-600 bg-green-50" : "border-gray-200"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="enquiry-type"
-                            value={type.value}
-                            checked={contactForm.enquiryType === type.value}
-                            onChange={(e) => setContactForm({ ...contactForm, enquiryType: e.target.value })}
-                            className="sr-only"
-                          />
-                          <type.icon className="h-5 w-5 mx-auto mb-1 text-gray-600" />
-                          <div className="text-xs font-medium">{type.label}</div>
-                        </label>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="enquiry-type">Enquiry Type *</Label>
+                      <Select
+                        value={contactForm.enquiryType}
+                        onValueChange={(value) => setContactForm({ ...contactForm, enquiryType: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select enquiry type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General Enquiry</SelectItem>
+                          <SelectItem value="conference">Conference Registration</SelectItem>
+                          <SelectItem value="speaker">Speaker Application</SelectItem>
+                          <SelectItem value="technical">Technical Support</SelectItem>
+                          <SelectItem value="media">Media & Press</SelectItem>
+                          <SelectItem value="partnership">Partnership Opportunities</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject *</Label>
+                  <div>
+                    <Label htmlFor="subject">Subject</Label>
                     <Input
                       id="subject"
                       value={contactForm.subject}
                       onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
-                      placeholder="Brief description of your inquiry"
-                      required
+                      placeholder="Enter the subject of your enquiry"
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div>
                     <Label htmlFor="message">Message *</Label>
                     <Textarea
                       id="message"
                       value={contactForm.message}
                       onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                      placeholder="Please provide details about your inquiry..."
+                      placeholder="Please provide details about your enquiry..."
                       rows={5}
                       required
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
+                  <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
                     {isSubmitting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                        Sending Message...
-                      </>
+                      "Submitting..."
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        Send Message
+                        Send Enquiry
                       </>
                     )}
                   </Button>
@@ -283,6 +307,19 @@ export function ContactSection() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Additional Information */}
+        <div className="bg-green-50 rounded-lg p-6 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Need Immediate Assistance?</h3>
+          <p className="text-gray-600 mb-4">
+            For urgent conference-related matters, please call our dedicated conference hotline
+          </p>
+          <div className="flex items-center justify-center gap-2 text-green-600 font-semibold">
+            <Phone className="h-5 w-5" />
+            <span>+234 9 461 2350 (Conference Hotline)</span>
+          </div>
+          <p className="text-sm text-gray-500 mt-2">Available 24/7 during conference period</p>
         </div>
       </div>
     </section>

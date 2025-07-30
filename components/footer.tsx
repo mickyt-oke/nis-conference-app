@@ -23,10 +23,10 @@ export function Footer() {
                 <p className="text-green-200 text-sm">Conference Portal</p>
               </div>
             </div>
-            <p className="text-green-200 text-sm leading-relaxed">
+            {/* <p className="text-green-200 text-sm leading-relaxed">
               The official conference management platform for the Nigeria Immigration Service, facilitating professional
               development and knowledge sharing across the organization.
-            </p>
+            </p> */}
             <div className="flex space-x-4">
               <Link href="#" className="text-green-200 hover:text-white transition-colors">
                 <Facebook className="w-5 h-5" />
@@ -82,7 +82,7 @@ export function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Services</h4>
+            <h4 className="font-semibold text-lg mb-4">Other Links</h4>
             <ul className="space-y-3">
               <li>
                 <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
@@ -91,27 +91,27 @@ export function Footer() {
               </li>
               <li>
                 <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                  Document Archive
+                  Archives
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                  Speaker Bureau
+                  Speakers &amp; Presenters
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                  Training Programs
+                  NIS Directory
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                  Policy Resources
+                  NIS Legal Frameworks
                 </Link>
               </li>
               <li>
                 <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                  Research Publications
+                  Research Papers &amp; Publications
                 </Link>
               </li>
             </ul>
@@ -125,8 +125,8 @@ export function Footer() {
                 <MapPin className="w-4 h-4 text-green-300 mt-1 flex-shrink-0" />
                 <div className="text-sm text-green-200">
                   <p>Nigeria Immigration Service</p>
-                  <p>Federal Secretariat Complex</p>
-                  <p>Shehu Shagari Way, Abuja</p>
+                  <p>Umar Yar-Adua Exp Way</p>
+                  <p>Airport Road, Sauka, Abuja</p>
                   <p>Federal Capital Territory, Nigeria</p>
                 </div>
               </div>
@@ -214,16 +214,7 @@ export function Footer() {
                     Main NIS Website
                   </Link>
                 </li>
-                <li>
-                  <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                    Immigration Services
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
-                    Career Opportunities
-                  </Link>
-                </li>
+                
                 <li>
                   <Link href="#" className="text-green-200 hover:text-white transition-colors text-sm">
                     News & Updates
@@ -239,11 +230,11 @@ export function Footer() {
       <div className="border-t border-green-800 bg-green-950">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            <div className="text-sm text-green-300">© 2024 Nigeria Immigration Service. All rights reserved.</div>
+            <div className="text-sm text-green-300">© 2025 Nigeria Immigration Service. All rights reserved.</div>
             <div className="flex items-center space-x-4 text-sm text-green-300">
               <span>Conference Management System v1.0</span>
               <span>•</span>
-              <span>Powered by NIS IT Department</span>
+              <span>Powered by NIS ICT Directorate</span>
             </div>
           </div>
         </div>
