@@ -6,24 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Shield,
-  Users,
-  FileText,
-  Calendar,
-  Globe,
-  Lock,
-  Database,
-  Smartphone,
-  ChevronRight,
-  Play,
-  Radio,
-} from "lucide-react"
-import { Footer } from "@/components/footer"
+import { Database, FileText, Globe, Users, Lock, Smartphone, ChevronRight, Calendar } from "lucide-react"
+import { Layout } from "@/components/layout"
+import { CountdownTimer } from "@/components/countdown-timer"
+import { ConferenceDestination } from "@/components/conference-destination"
+import { ContactSection } from "@/components/contact-section"
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isLive, setIsLive] = useState(true) // Simulating live status
+  const [isLoading, setIsLoading] = useState(true)
 
   const heroImages = [
     "/placeholder.svg?height=600&width=1200&text=NIS+Headquarters+Building",
@@ -33,10 +24,19 @@ export default function HomePage() {
   ]
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    // Simulate loading time
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
+
+    const slideTimer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length)
     }, 5000)
-    return () => clearInterval(timer)
+
+    return () => {
+      clearTimeout(loadingTimer)
+      clearInterval(slideTimer)
+    }
   }, [heroImages.length])
 
   const galleryCategories = [
@@ -158,71 +158,9 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-green-800 text-white sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Shield className="h-8 w-8" />
-              <div>
-                <h1 className="text-xl font-bold">Nigeria Immigration Service</h1>
-                <p className="text-sm text-green-100">Conference Management System</p>
-              </div>
-            </div>
-
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="hover:text-green-200 transition-colors">
-                Home
-              </Link>
-              <Link href="/conferences" className="hover:text-green-200 transition-colors">
-                Conferences
-              </Link>
-              <Link href="/speakers" className="hover:text-green-200 transition-colors">
-                Speakers
-              </Link>
-              <Link href="/documents" className="hover:text-green-200 transition-colors">
-                Documents
-              </Link>
-              <Link href="/gallery" className="hover:text-green-200 transition-colors">
-                Gallery
-              </Link>
-              <Link href="/media" className="hover:text-green-200 transition-colors">
-                Media
-              </Link>
-              <Link href="/register" className="hover:text-green-200 transition-colors">
-                Register
-              </Link>
-
-              {/* Livestream Button */}
-              <Link href="/media">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="bg-red-600 hover:bg-red-700 text-white border-0 flex items-center gap-2"
-                >
-                  {isLive && <Radio className="h-4 w-4 animate-pulse" />}
-                  <Play className="h-4 w-4" />
-                  {isLive ? "LIVE" : "Stream"}
-                </Button>
-              </Link>
-
-              <Link href="/login">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-white text-white hover:bg-white hover:text-green-800 bg-transparent"
-                >
-                  Login
-                </Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section with Background Carousel */}
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
+    <Layout showLoading={isLoading}>
+      {/* Hero Section with Background Carousel and Countdown */}
+      <section className="relative h-[700px] flex items-center justify-center overflow-hidden">
         {/* Background Carousel */}
         <div className="absolute inset-0">
           {heroImages.map((image, index) => (
@@ -243,26 +181,35 @@ export default function HomePage() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-          <Badge variant="secondary" className="mb-4 bg-white/20 text-white border-white/30">
-            Version 1.0 - Conference Management System
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Nigeria Immigration Service Conference Website</h1>
-          <p className="text-xl md:text-2xl mb-8 text-green-100">
-            A comprehensive digital platform for managing annual conferences, archiving proceedings, and enhancing
-            institutional knowledge management.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-green-800 hover:bg-green-50">
-              Explore Platform <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-green-800 bg-transparent"
-            >
-              View Documentation
-            </Button>
+        <div className="relative z-10 text-center text-white px-4 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-8 items-center">
+            <div className="lg:col-span-2">
+              <Badge variant="secondary" className="mb-4 bg-white/20 text-white border-white/30">
+                Version 1.0 - Conference Management System
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">Nigeria Immigration Service Conference Website</h1>
+              <p className="text-xl md:text-2xl mb-8 text-green-100">
+                A comprehensive digital platform for managing annual conferences, archiving proceedings, and enhancing
+                institutional knowledge management.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="bg-white text-green-800 hover:bg-green-50">
+                  Explore Platform <ChevronRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-green-800 bg-transparent"
+                >
+                  View Documentation
+                </Button>
+              </div>
+            </div>
+
+            {/* Countdown Timer */}
+            <div className="lg:col-span-1">
+              <CountdownTimer targetDate="2024-06-15T09:00:00" eventName="Annual Strategic Conference 2024" />
+            </div>
           </div>
         </div>
       </section>
@@ -454,7 +401,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Footer />
-    </div>
+      {/* Conference Destination Section */}
+      <ConferenceDestination />
+
+      {/* Contact Section */}
+      <ContactSection />
+    </Layout>
   )
 }
