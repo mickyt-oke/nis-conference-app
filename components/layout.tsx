@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -10,6 +9,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Shield, Play, Radio, Menu } from "lucide-react"
 import { Footer } from "@/components/footer"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import { LanguageSelector } from "@/components/language-selector"
+import { BackToTop } from "@/components/back-to-top"
+import { useLanguage } from "@/contexts/language-context"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -17,6 +19,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children, showLoading = false }: LayoutProps) {
+  const { t } = useLanguage()
   const [isLive, setIsLive] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -50,26 +53,29 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-6">
               <Link href="/" className="hover:text-green-200 transition-colors">
-                Home
+                {t("home")}
               </Link>
               <Link href="/conferences" className="hover:text-green-200 transition-colors">
-                Conferences
+                {t("conferences")}
               </Link>
               <Link href="/speakers" className="hover:text-green-200 transition-colors">
-                Speakers
+                {t("speakers")}
               </Link>
               <Link href="/documents" className="hover:text-green-200 transition-colors">
-                Documents
+                {t("documents")}
               </Link>
               <Link href="/gallery" className="hover:text-green-200 transition-colors">
-                Gallery
+                {t("gallery")}
               </Link>
               <Link href="/media" className="hover:text-green-200 transition-colors">
-                Media
+                {t("media")}
               </Link>
               <Link href="/register" className="hover:text-green-200 transition-colors">
-                Register
+                {t("register")}
               </Link>
+
+              {/* Language Selector */}
+              <LanguageSelector />
 
               {/* Livestream Button */}
               <Link href="/media">
@@ -80,7 +86,7 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                 >
                   {isLive && <Radio className="h-4 w-4 animate-pulse" />}
                   <Play className="h-4 w-4" />
-                  {isLive ? "LIVE" : "Stream"}
+                  {isLive ? t("live") : t("stream")}
                 </Button>
               </Link>
 
@@ -90,7 +96,7 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                   size="sm"
                   className="border-white text-white hover:bg-white hover:text-green-800 bg-transparent"
                 >
-                  Login
+                  {t("login")}
                 </Button>
               </Link>
             </nav>
@@ -112,52 +118,56 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Home
+                    {t("home")}
                   </Link>
                   <Link
                     href="/conferences"
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Conferences
+                    {t("conferences")}
                   </Link>
                   <Link
                     href="/speakers"
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Speakers
+                    {t("speakers")}
                   </Link>
                   <Link
                     href="/documents"
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Documents
+                    {t("documents")}
                   </Link>
                   <Link
                     href="/gallery"
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Gallery
+                    {t("gallery")}
                   </Link>
                   <Link
                     href="/media"
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Media
+                    {t("media")}
                   </Link>
                   <Link
                     href="/register"
                     className="hover:text-green-200 transition-colors py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Register
+                    {t("register")}
                   </Link>
 
                   <div className="pt-4 border-t border-green-700">
+                    <div className="mb-4">
+                      <LanguageSelector />
+                    </div>
+
                     <Link href="/media" onClick={() => setIsMobileMenuOpen(false)}>
                       <Button
                         variant="secondary"
@@ -166,7 +176,7 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                       >
                         {isLive && <Radio className="h-4 w-4 animate-pulse" />}
                         <Play className="h-4 w-4" />
-                        {isLive ? "LIVE" : "Stream"}
+                        {isLive ? t("live") : t("stream")}
                       </Button>
                     </Link>
 
@@ -176,7 +186,7 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                         size="sm"
                         className="border-white text-white hover:bg-white hover:text-green-800 bg-transparent w-full"
                       >
-                        Login
+                        {t("login")}
                       </Button>
                     </Link>
                   </div>
@@ -188,10 +198,15 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+      </main>
 
       {/* Footer */}
       <Footer />
+
+      {/* Back to Top Button */}
+      <BackToTop />
     </div>
   )
 }

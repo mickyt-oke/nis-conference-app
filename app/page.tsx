@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
 import { Layout } from "@/components/layout"
+import { LoadingSpinner } from "@/components/loading-spinner"
 import { CountdownTimer } from "@/components/countdown-timer"
-import { ConferenceDestination } from "@/components/conference-destination"
-import { ContactSection } from "@/components/contact-section"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +23,15 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { useLanguage } from "@/contexts/language-context"
+
+// Lazy load components
+const ConferenceDestination = lazy(() =>
+  import("@/components/conference-destination").then((module) => ({ default: module.ConferenceDestination })),
+)
+const ContactSection = lazy(() =>
+  import("@/components/contact-section").then((module) => ({ default: module.ContactSection })),
+)
 
 const heroImages = [
   "/placeholder.svg?height=600&width=1200&text=Conference+Hall",
@@ -33,73 +41,74 @@ const heroImages = [
   "/placeholder.svg?height=600&width=1200&text=Awards+Ceremony",
 ]
 
-const features = [
-  {
-    icon: Calendar,
-    title: "Conference Management",
-    description: "Comprehensive conference planning and management system",
-    href: "/conferences",
-  },
-  {
-    icon: Users,
-    title: "Speaker Profiles",
-    description: "Detailed profiles of keynote speakers and industry experts",
-    href: "/speakers",
-  },
-  {
-    icon: FileText,
-    title: "Document Center",
-    description: "Access conference materials, presentations, and resources",
-    href: "/documents",
-  },
-  {
-    icon: Camera,
-    title: "Media Gallery",
-    description: "Photo galleries and video content from past events",
-    href: "/gallery",
-  },
-]
-
-const stats = [
-  { number: "200+", label: "Registered Participants", icon: Users },
-  { number: "50+", label: "Expert Speakers", icon: Award },
-  { number: "25+", label: "Stakeholders Represented", icon: Globe },
-  { number: "5", label: "Days of Learning", icon: Clock },
-]
-
-const upcomingEvents = [
-  {
-    id: 1,
-    title: "Opening Ceremony & Keynote Address",
-    date: "March 15, 2025",
-    time: "9:00 AM - 11:00 AM",
-    location: "Main Auditorium",
-    speaker: "Hon. Minister of Interior",
-    type: "Keynote",
-  },
-  {
-    id: 2,
-    title: "Digital Immigration Systems Panel",
-    date: "March 15, 2025",
-    time: "2:00 PM - 4:00 PM",
-    location: "Conference Hall A",
-    speaker: "Tech Industry Leaders",
-    type: "Panel",
-  },
-  {
-    id: 3,
-    title: "Border Security Workshop",
-    date: "March 16, 2025",
-    time: "10:00 AM - 12:00 PM",
-    location: "Workshop Room 1",
-    speaker: "Security Experts",
-    type: "Workshop",
-  },
-]
-
 export default function HomePage() {
+  const { t } = useLanguage()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+
+  const features = [
+    {
+      icon: Calendar,
+      title: t("conferenceManagement"),
+      description: t("conferenceManagementDesc"),
+      href: "/conferences",
+    },
+    {
+      icon: Users,
+      title: t("speakerProfiles"),
+      description: t("speakerProfilesDesc"),
+      href: "/speakers",
+    },
+    {
+      icon: FileText,
+      title: t("documentCenter"),
+      description: t("documentCenterDesc"),
+      href: "/documents",
+    },
+    {
+      icon: Camera,
+      title: t("mediaGallery"),
+      description: t("mediaGalleryDesc"),
+      href: "/gallery",
+    },
+  ]
+
+  const stats = [
+    { number: "200+", label: t("registeredParticipants"), icon: Users },
+    { number: "50+", label: t("expertSpeakers"), icon: Award },
+    { number: "25+", label: t("stakeholdersRepresented"), icon: Globe },
+    { number: "5", label: t("daysOfLearning"), icon: Clock },
+  ]
+
+  const upcomingEvents = [
+    {
+      id: 1,
+      title: "Opening Ceremony & Keynote Address",
+      date: "March 15, 2025",
+      time: "9:00 AM - 11:00 AM",
+      location: "Main Auditorium",
+      speaker: "Hon. Minister of Interior",
+      type: "Keynote",
+    },
+    {
+      id: 2,
+      title: "Digital Immigration Systems Panel",
+      date: "March 15, 2025",
+      time: "2:00 PM - 4:00 PM",
+      location: "Conference Hall A",
+      speaker: "Tech Industry Leaders",
+      type: "Panel",
+    },
+    {
+      id: 3,
+      title: "Border Security Workshop",
+      date: "March 16, 2025",
+      time: "10:00 AM - 12:00 PM",
+      location: "Workshop Room 1",
+      speaker: "Security Experts",
+      type: "Workshop",
+    },
+  ]
 
   useEffect(() => {
     // Simulate loading
@@ -146,14 +155,12 @@ export default function HomePage() {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
           <div className="mb-8">
-            <Badge className="bg-green-600 hover:bg-green-700 text-white mb-4">Annual Conference 2024</Badge>
+            <Badge className="bg-green-600 hover:bg-green-700 text-white mb-4">{t("annualConference")}</Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Nigeria Immigration Service
-              <span className="block text-green-400">Conference Management</span>
+              {t("heroTitle")}
+              <span className="block text-green-400">{t("heroSubtitle")}</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">
-              Advancing Immigration Excellence Through Innovation, Collaboration, and Professional Development
-            </p>
+            <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">{t("heroDescription")}</p>
           </div>
 
           {/* Countdown Timer */}
@@ -164,7 +171,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-3">
-                Register Now
+                {t("registerNow")}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -174,7 +181,7 @@ export default function HomePage() {
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 bg-transparent"
               >
-                View Program
+                {t("viewProgram")}
               </Button>
             </Link>
           </div>
@@ -215,7 +222,7 @@ export default function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Conference Management Features</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("conferenceManagementFeatures")}</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Explore our comprehensive platform designed to enhance your conference experience
             </p>
@@ -245,10 +252,8 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Upcoming Conference Events</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Don't miss these exciting sessions and networking opportunities
-            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("upcomingEvents")}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t("upcomingEventsDesc")}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -294,7 +299,7 @@ export default function HomePage() {
           <div className="text-center mt-8">
             <Link href="/conferences">
               <Button className="bg-green-600 hover:bg-green-700">
-                View Full Program
+                {t("viewFullProgram")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -302,26 +307,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Conference Destination Section */}
-      <ConferenceDestination />
+      {/* Lazy-loaded sections */}
+      <Suspense fallback={<LoadingSpinner />}>
+        <ConferenceDestination />
+      </Suspense>
 
-      {/* Contact Section */}
-      <ContactSection />
+      <Suspense fallback={<LoadingSpinner />}>
+        <ContactSection />
+      </Suspense>
 
       {/* Call to Action */}
       <section className="py-16 bg-green-600 text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <Shield className="h-16 w-16 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4">Join the Future of Immigration Services</h2>
-            <p className="text-xl mb-8 text-green-100">
-              Be part of Nigeria's premier Immigration conference. Network with industry leaders, learn from experts,
-              and contribute to shaping the future of immigration services.
-            </p>
+            <h2 className="text-3xl font-bold mb-4">{t("joinFuture")}</h2>
+            <p className="text-xl mb-8 text-green-100">{t("joinFutureDesc")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
                 <Button size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8 py-3">
-                  Register Today
+                  {t("registerToday")}
                   <CheckCircle className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -331,7 +336,7 @@ export default function HomePage() {
                   variant="outline"
                   className="border-white text-white hover:bg-white hover:text-green-600 px-8 py-3 bg-transparent"
                 >
-                  Meet Our Speakers
+                  {t("meetSpeakers")}
                 </Button>
               </Link>
             </div>

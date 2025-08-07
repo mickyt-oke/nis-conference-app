@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIS Conference Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-green-800 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <img src="images/nis-logo.png" alt="NIS Logo" class="w-10 h-10 rounded-full">
+                    <h1 class="text-xl font-bold">NIS Conference</h1>
+                </div>
+                
+                <div class="hidden md:flex space-x-6">
+                    <a href="#home" class="hover:text-green-300 transition-colors">Home</a>
+                    <a href="#conferences" class="hover:text-green-300 transition-colors">Conferences</a>
+                    <a href="#speakers" class="hover:text-green-300 transition-colors">Speakers</a>
+                    <a href="#documents" class="hover:text-green-300 transition-colors">Documents</a>
+                    <a href="#gallery" class="hover:text-green-300 transition-colors">Gallery</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <select id="languageSelector" class="bg-green-700 text-white border border-green-600 rounded px-3 py-1 text-sm">
+                            <option value="en">🇺🇸 English</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="ar">🇸🇦 العربية</option>
+                        </select>
+                    </div>
+                    
+                    <a href="login.html" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-colors">Login</a>
+                    <a href="register.html" class="border border-green-300 hover:bg-green-700 px-4 py-2 rounded transition-colors">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div id="heroCarousel" class="absolute inset-0 z-0">
+            <!-- Background images will be loaded here -->
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+        
+        <div class="relative z-20 text-center text-white max-w-4xl mx-auto px-4">
+            <div class="mb-8">
+                <span class="bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4 inline-block">
+                    Annual Conference 2025
+                </span>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                    Nigeria Immigration Service
+                    <span class="block text-green-400">Conference Management</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">
+                    Advancing Immigration Excellence Through Innovation, Collaboration, and Professional Development
+                </p>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div id="countdownTimer" class="mb-8">
+                <div class="flex justify-center space-x-4 text-center">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div id="days" class="text-3xl font-bold">00</div>
+                        <div class="text-sm">Days</div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div id="hours" class="text-3xl font-bold">00</div>
+                        <div class="text-sm">Hours</div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div id="minutes" class="text-3xl font-bold">00</div>
+                        <div class="text-sm">Minutes</div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div id="seconds" class="text-3xl font-bold">00</div>
+                        <div class="text-sm">Seconds</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="register.html" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    Register Now
+                    <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                <a href="#conferences" class="border border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-lg font-medium transition-colors">
+                    View Program
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-green-600 text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold mb-2">200+</div>
+                    <div class="text-green-100">Registered Participants</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold mb-2">50+</div>
+                    <div class="text-green-100">Expert Speakers</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold mb-2">25+</div>
+                    <div class="text-green-100">Stakeholders Represented</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold mb-2">5</div>
+                    <div class="text-green-100">Days of Learning</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Conferences -->
+    <section id="conferences" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Upcoming Conferences</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Join us for these exciting conferences and networking opportunities
+                </p>
+            </div>
+
+            <div id="conferencesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Conferences will be loaded here -->
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="conferences.html" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    View All Conferences
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Speakers -->
+    <section id="speakers" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Featured Speakers</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Learn from industry experts and thought leaders
+                </p>
+            </div>
+
+            <div id="speakersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Speakers will be loaded here -->
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="speakers.html" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    View All Speakers
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="images/nis-logo.png" alt="NIS Logo" class="w-8 h-8 rounded-full">
+                        <h3 class="text-lg font-bold">NIS Conference</h3>
+                    </div>
+                    <p class="text-gray-400">
+                        Nigeria Immigration Service Conference Management System
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#home" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#conferences" class="hover:text-white transition-colors">Conferences</a></li>
+                        <li><a href="#speakers" class="hover:text-white transition-colors">Speakers</a></li>
+                        <li><a href="register.html" class="hover:text-white transition-colors">Register</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="documents.html" class="hover:text-white transition-colors">Documents</a></li>
+                        <li><a href="gallery.html" class="hover:text-white transition-colors">Gallery</a></li>
+                        <li><a href="media.html" class="hover:text-white transition-colors">Media</a></li>
+                        <li><a href="login.html" class="hover:text-white transition-colors">Admin Login</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                    <div class="space-y-2 text-gray-400">
+                        <p>📧 conference@immigration.gov.ng</p>
+                        <p>📞 +234 9 461 2345</p>
+                        <p>📍 Abuja, Nigeria</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Nigeria Immigration Service. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="fixed bottom-6 right-6 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-all duration-300 opacity-0 invisible">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
+
+    <script src="js/api.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
