@@ -6,27 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('conferences', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('title');
             $table->text('description');
             $table->datetime('start_date');
             $table->datetime('end_date');
             $table->string('location');
-            $table->text('venue_details')->nullable();
-            $table->integer('max_attendees');
-            $table->decimal('registration_fee', 10, 2)->default(0);
-            $table->enum('status', ['draft', 'published', 'ongoing', 'completed', 'cancelled'])->default('draft');
-            $table->string('banner_image')->nullable();
+            $table->string('venue');
+            $table->integer('max_participants')->default(100);
+            $table->datetime('registration_deadline');
+            $table->enum('status', ['draft', 'active', 'completed', 'cancelled'])->default('draft');
+            $table->string('image_url')->nullable();
+            $table->json('agenda')->nullable();
+            $table->json('requirements')->nullable();
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('conferences');
     }

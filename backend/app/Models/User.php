@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -40,18 +39,15 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'last_login' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -74,74 +70,37 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Get the registrations for the user.
+     * Check if user has a specific role
      */
-    public function registrations(): HasMany
+    public function hasRole($role)
     {
-        return $this->hasMany(Registration::class);
-    }
-
-    /**
-     * Get the speakers created by the user.
-     */
-    public function speakers(): HasMany
-    {
-        return $this->hasMany(Speaker::class, 'created_by');
-    }
-
-    /**
-     * Get the conferences created by the user.
-     */
-    public function conferences(): HasMany
-    {
-        return $this->hasMany(Conference::class, 'created_by');
-    }
-
-    /**
-     * Get the documents uploaded by the user.
-     */
-    public function documents(): HasMany
-    {
-        return $this->hasMany(Document::class, 'uploaded_by');
-    }
-
-    /**
-     * Check if user has a specific role.
-     */
-    public function hasRole(string $role): bool
-    {
+        if (is_array($role)) {
+            return in_array($this->role, $role);
+        }
         return $this->role === $role;
     }
 
     /**
-     * Check if user is admin.
+     * Check if user is admin
      */
-    public function isAdmin(): bool
+    public function isAdmin()
     {
-        return $this->hasRole('admin');
+        return $this->role === 'admin';
     }
 
     /**
-     * Check if user is supervisor.
+     * Check if user is supervisor
      */
-    public function isSupervisor(): bool
+    public function isSupervisor()
     {
-        return $this->hasRole('supervisor');
+        return $this->role === 'supervisor';
     }
 
     /**
-     * Check if user is regular user.
+     * Get user's registrations
      */
-    public function isUser(): bool
+    public function registrations()
     {
-        return $this->hasRole('user');
-    }
-
-    /**
-     * Check if user is active.
-     */
-    public function isActive(): bool
-    {
-        return $this->status === 'active';
+        return $this->hasMany(Registration::class);
     }
 }

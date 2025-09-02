@@ -6,27 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('speakers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('title');
+            $table->text('bio');
             $table->string('organization');
-            $table->text('biography');
-            $table->string('expertise');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('phone')->nullable();
-            $table->string('linkedin')->nullable();
-            $table->string('twitter')->nullable();
-            $table->string('photo')->nullable();
+            $table->string('photo_url')->nullable();
+            $table->string('linkedin_url')->nullable();
+            $table->string('twitter_url')->nullable();
+            $table->string('website_url')->nullable();
+            $table->json('expertise')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('speakers');
     }

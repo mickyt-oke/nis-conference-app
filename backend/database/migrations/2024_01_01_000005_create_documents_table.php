@@ -6,27 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('conference_id')->constrained('conferences');
-            $table->enum('type', ['presentation', 'document', 'image', 'video', 'other']);
-            $table->string('filename');
+            $table->string('file_name');
             $table->string('file_path');
             $table->bigInteger('file_size');
-            $table->string('mime_type');
+            $table->string('file_type');
+            $table->foreignId('conference_id')->nullable()->constrained('conferences');
+            $table->foreignId('uploaded_by')->constrained('users');
             $table->boolean('is_public')->default(true);
             $table->integer('download_count')->default(0);
-            $table->foreignId('uploaded_by')->constrained('users');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('documents');
     }

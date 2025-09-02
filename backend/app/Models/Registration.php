@@ -10,71 +10,73 @@ class Registration extends Model
     use HasFactory;
 
     protected $fillable = [
-        'registration_id',
-        'conference_id',
         'user_id',
-        'registration_type',
-        'first_name',
-        'last_name',
+        'conference_id',
+        'full_name',
         'email',
         'phone',
         'organization',
-        'job_title',
+        'position',
+        'dietary_requirements',
+        'special_needs',
         'status',
-        'registration_data',
-        'approved_at',
         'approved_by',
-        'rejected_at',
-        'rejected_by',
-        'supervisor_comments'
+        'approved_at',
+        'rejection_reason',
+        'comments',
     ];
 
     protected $casts = [
-        'registration_data' => 'array',
         'approved_at' => 'datetime',
-        'rejected_at' => 'datetime'
+        'dietary_requirements' => 'array',
     ];
 
-    // Relationships
-    public function conference()
-    {
-        return $this->belongsTo(Conference::class);
-    }
-
+    /**
+     * Get the user who made the registration
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function approvedBy()
+    /**
+     * Get the conference
+     */
+    public function conference()
+    {
+        return $this->belongsTo(Conference::class);
+    }
+
+    /**
+     * Get the user who approved the registration
+     */
+    public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public function rejectedBy()
+    /**
+     * Approve the registration
+     */
+    public function approve($approvedBy, $comments = null)
     {
-        return $this->belongsTo(User::class, 'rejected_by');
+        $this->update([
+            'status' => 'approved',
+            'approved_by' => $approvedBy,
+            'approved_at' => now(),
+            'comments' => $comments,
+        ]);
     }
 
-    // Scopes
-    public function scopePending($query)
+    /**
+     * Reject the registration
+     */
+    public function reject($rejectedBy, $reason)
     {
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeApproved($query)
-    {
-        return $query->where('status', 'approved');
-    }
-
-    public function scopeRejected($query)
-    {
-        return $query->where('status', 'rejected');
-    }
-
-    // Accessors
-    public function getFullNameAttribute()
-    {
-        return $this->first_name . ' ' . $this->last_name;
+        $this->update([
+            'status' => 'rejected',
+            'approved_by' => $rejectedBy,
+            'rejection_reason' => $reason,
+        ]);
     }
 }

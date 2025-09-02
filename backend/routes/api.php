@@ -12,23 +12,18 @@ use App\Http\Controllers\DocumentController;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
 // Public routes
-Route::group(['prefix' => 'auth'], function () {
+Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
 });
 
 // Protected routes
-Route::group(['middleware' => 'auth:api'], function () {
+Route::middleware('auth:api')->group(function () {
     // Auth routes
-    Route::group(['prefix' => 'auth'], function () {
+    Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
         Route::get('me', [AuthController::class, 'me']);
@@ -36,58 +31,46 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // Conference routes
     Route::apiResource('conferences', ConferenceController::class);
-    Route::post('conferences/{conference}/register', [ConferenceController::class, 'register']);
-    Route::get('conferences/{conference}/registrations', [ConferenceController::class, 'getRegistrations']);
-
+    
     // Registration routes
-    Route::apiResource('registrations', RegistrationController::class);
-    Route::patch('registrations/{registration}/approve', [RegistrationController::class, 'approve']);
-    Route::patch('registrations/{registration}/reject', [RegistrationController::class, 'reject']);
+    Route::prefix('registrations')->group(function () {
+        Route::get('/', [RegistrationController::class, 'index']);
+        Route::post('/', [RegistrationController::class, 'store']);
+        Route::get('/{id}', [RegistrationController::class, 'show']);
+        Route::put('/{id}', [RegistrationController::class, 'update']);
+        Route::delete('/{id}', [RegistrationController::class, 'destroy']);
+        Route::patch('/{id}/approve', [RegistrationController::class, 'approve']);
+        Route::patch('/{id}/reject', [RegistrationController::class, 'reject']);
+    });
 
     // Speaker routes
     Route::apiResource('speakers', SpeakerController::class);
-    Route::post('speakers/{speaker}/upload-photo', [SpeakerController::class, 'uploadPhoto']);
+    Route::post('speakers/{id}/photo', [SpeakerController::class, 'uploadPhoto']);
 
     // Document routes
     Route::apiResource('documents', DocumentController::class);
-    Route::post('documents/upload', [DocumentController::class, 'upload']);
-    Route::get('documents/{document}/download', [DocumentController::class, 'download']);
+    Route::post('documents/{id}/file', [DocumentController::class, 'uploadFile']);
 
     // Admin only routes
-    Route::group(['middleware' => 'role:admin'], function () {
+    Route::middleware('role:admin')->group(function () {
         Route::get('admin/dashboard', function () {
-            return response()->json([
-                'success' => true,
-                'message' => 'Admin dashboard data',
-                'data' => [
-                    'total_users' => \App\Models\User::count(),
-                    'total_conferences' => \App\Models\Conference::count(),
-                    'total_registrations' => \App\Models\Registration::count(),
-                    'total_speakers' => \App\Models\Speaker::count(),
-                ]
-            ]);
+            return response()->json(['message' => 'Admin dashboard data']);
         });
     });
 
     // Supervisor routes
-    Route::group(['middleware' => 'role:supervisor,admin'], function () {
+    Route::middleware('role:supervisor,admin')->group(function () {
         Route::get('supervisor/dashboard', function () {
-            return response()->json([
-                'success' => true,
-                'message' => 'Supervisor dashboard data',
-                'data' => [
-                    'pending_registrations' => \App\Models\Registration::where('status', 'pending')->count(),
-                    'active_conferences' => \App\Models\Conference::where('status', 'active')->count(),
-                ]
-            ]);
+            return response()->json(['message' => 'Supervisor dashboard data']);
         });
     });
 });
 
-// Fallback route
-Route::fallback(function () {
+// Health check
+Route::get('health', function () {
     return response()->json([
-        'success' => false,
-        'message' => 'API endpoint not found'
-    ], 404);
+        'status' => 'ok',
+        'timestamp' => now(),
+        'version' => '1.0.0'
+    ]);
 });

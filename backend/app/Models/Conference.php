@@ -11,71 +11,76 @@ class Conference extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
+        'title',
         'description',
         'start_date',
         'end_date',
         'location',
-        'venue_details',
-        'max_attendees',
-        'registration_fee',
+        'venue',
+        'max_participants',
+        'registration_deadline',
         'status',
-        'banner_image',
-        'created_by'
+        'image_url',
+        'agenda',
+        'requirements',
+        'created_by',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'registration_fee' => 'decimal:2'
+        'registration_deadline' => 'datetime',
+        'agenda' => 'array',
+        'requirements' => 'array',
     ];
 
-    // Relationships
+    /**
+     * Get the user who created the conference
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get conference registrations
+     */
     public function registrations()
     {
         return $this->hasMany(Registration::class);
     }
 
+    /**
+     * Get conference speakers
+     */
     public function speakers()
     {
         return $this->belongsToMany(Speaker::class, 'conference_speakers');
     }
 
+    /**
+     * Get conference documents
+     */
     public function documents()
     {
         return $this->hasMany(Document::class);
     }
 
-    public function createdBy()
+    /**
+     * Check if registration is open
+     */
+    public function isRegistrationOpen()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->status === 'active' && 
+               $this->registration_deadline > now() &&
+               $this->registrations()->where('status', 'approved')->count() < $this->max_participants;
     }
 
-    // Scopes
-    public function scopePublished($query)
+    /**
+     * Get available spots
+     */
+    public function getAvailableSpotsAttribute()
     {
-        return $query->where('status', 'published');
-    }
-
-    public function scopeUpcoming($query)
-    {
-        return $query->where('start_date', '>', now());
-    }
-
-    public function scopeOngoing($query)
-    {
-        return $query->where('start_date', '<=', now())
-                    ->where('end_date', '>=', now());
-    }
-
-    // Accessors
-    public function getIsFullAttribute()
-    {
-        return $this->registrations()->where('status', '!=', 'cancelled')->count() >= $this->max_attendees;
-    }
-
-    public function getAvailableSlotsAttribute()
-    {
-        return $this->max_attendees - $this->registrations()->where('status', '!=', 'cancelled')->count();
+        return $this->max_participants - $this->registrations()->where('status', 'approved')->count();
     }
 }

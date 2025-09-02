@@ -4,41 +4,35 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Speaker extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'name',
         'title',
+        'bio',
         'organization',
-        'biography',
-        'expertise',
         'email',
         'phone',
-        'linkedin',
-        'twitter',
-        'photo',
-        'status'
+        'photo_url',
+        'linkedin_url',
+        'twitter_url',
+        'website_url',
+        'expertise',
+        'status',
     ];
 
-    // Relationships
+    protected $casts = [
+        'expertise' => 'array',
+    ];
+
+    /**
+     * Get conferences where this speaker is speaking
+     */
     public function conferences()
     {
         return $this->belongsToMany(Conference::class, 'conference_speakers');
-    }
-
-    // Scopes
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
-    }
-
-    // Accessors
-    public function getPhotoUrlAttribute()
-    {
-        return $this->photo ? asset('storage/' . $this->photo) : null;
     }
 }

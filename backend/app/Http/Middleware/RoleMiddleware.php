@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RoleMiddleware
 {
@@ -16,29 +15,22 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not authenticated'
-                ], 401);
-            }
-
-            if (!in_array($user->role, $roles)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Insufficient permissions'
-                ], 403);
-            }
-
-            return $next($request);
-        } catch (\Exception $e) {
+        if (!auth()->check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Token invalid'
+                'message' => 'Unauthorized'
             ], 401);
         }
+
+        $user = auth()->user();
+        
+        if (!$user->hasRole($roles)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Forbidden. Insufficient permissions.'
+            ], 403);
+        }
+
+        return $next($request);
     }
 }
