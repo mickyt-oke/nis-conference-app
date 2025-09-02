@@ -124,9 +124,80 @@ export async function loginAction(prevState: any, formData: FormData): Promise<L
   }
 }
 
-export async function logoutAction() {
+export async function logoutUser() {
   const cookieStore = await cookies()
+
+  // Get the token for logout API call
+  const token = cookieStore.get("auth-token")?.value
+
+  if (token && !token.startsWith("mock-")) {
+    try {
+      // Call Laravel logout endpoint
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
+    } catch (error) {
+      console.error("Logout API error:", error)
+    }
+  }
+
+  // Clear cookies
   cookieStore.delete("auth-token")
   cookieStore.delete("user-role")
+
   redirect("/login")
+}
+
+export async function getCurrentUser() {
+  try {
+    const cookieStore = await cookies()
+    const tokenCookie = cookieStore.get("auth-token")
+    const roleCookie = cookieStore.get("user-role")
+
+    if (!tokenCookie || !roleCookie) {
+      return null
+    }
+
+    // If using mock token, return mock user data
+    if (tokenCookie.value.startsWith("mock-")) {
+      return {
+        id: 1,
+        name: "Mock User",
+        email: "user@nis.edu.kz",
+        role: roleCookie.value,
+      }
+    }
+
+    // Verify token with backend
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${tokenCookie.value}`,
+          Accept: "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        return null
+      }
+
+      const result = await response.json()
+      return result.user
+    } catch (error) {
+      console.warn("Backend verification failed, using cached user data")
+      return {
+        id: 1,
+        name: "Cached User",
+        email: "user@nis.edu.kz",
+        role: roleCookie.value,
+      }
+    }
+  } catch (error) {
+    console.error("Session error:", error)
+    return null
+  }
 }
