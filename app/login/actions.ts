@@ -8,14 +8,28 @@ interface LoginResponse {
   message: string
   user?: {
     id: number
-    name: string
     email: string
+    name: string
     role: string
   }
   token?: string
 }
 
-export async function loginAction(prevState: any, formData: FormData): Promise<LoginResponse> {
+interface User {
+  id: number
+  email: string
+  name: string
+  role: string
+}
+
+// Mock users for development
+const mockUsers = [
+  { id: 1, email: "admin@nis.edu.kh", password: "admin123", name: "Admin User", role: "admin" },
+  { id: 2, email: "supervisor@nis.edu.kh", password: "supervisor123", name: "Supervisor User", role: "supervisor" },
+  { id: 3, email: "user@nis.edu.kh", password: "user123", name: "Regular User", role: "user" },
+]
+
+export async function loginAction(formData: FormData): Promise<LoginResponse> {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
@@ -51,153 +65,123 @@ export async function loginAction(prevState: any, formData: FormData): Promise<L
         maxAge: 60 * 60 * 24 * 7, // 7 days
       })
 
-      cookieStore.set("user-role", data.user.role, {
+      cookieStore.set("user-data", JSON.stringify(data.user), {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 60 * 60 * 24 * 7, // 7 days
       })
 
-      // Redirect based on role
-      if (data.user.role === "admin") {
-        redirect("/admin")
-      } else if (data.user.role === "supervisor") {
-        redirect("/supervisor")
-      } else {
-        redirect("/dashboard")
-      }
-    } else {
-      const errorData = await response.json()
       return {
-        success: false,
-        message: errorData.message || "Invalid credentials",
+        success: true,
+        message: "Login successful",
+        user: data.user,
+        token: data.token,
       }
     }
   } catch (error) {
     console.log("Laravel backend not available, using mock authentication")
+  }
 
-    // Mock authentication for development
-    const mockUsers = [
-      { email: "admin@nis.edu.kz", password: "admin123", role: "admin", name: "Admin User" },
-      { email: "supervisor@nis.edu.kz", password: "supervisor123", role: "supervisor", name: "Supervisor User" },
-      { email: "user@nis.edu.kz", password: "user123", role: "user", name: "Regular User" },
-    ]
+  // Fallback to mock authentication
+  const user = mockUsers.find((u) => u.email === email && u.password === password)
 
-    const user = mockUsers.find((u) => u.email === email && u.password === password)
-
-    if (user) {
-      // Set mock authentication cookies
-      const cookieStore = await cookies()
-      cookieStore.set("auth-token", "mock-token-" + Date.now(), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      cookieStore.set("user-role", user.role, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      // Redirect based on role
-      if (user.role === "admin") {
-        redirect("/admin")
-      } else if (user.role === "supervisor") {
-        redirect("/supervisor")
-      } else {
-        redirect("/dashboard")
-      }
-    } else {
-      return {
-        success: false,
-        message: "Invalid credentials. Try: admin@nis.edu.kz/admin123",
-      }
+  if (!user) {
+    return {
+      success: false,
+      message: "Invalid email or password",
     }
   }
 
+  // Set mock authentication cookies
+  const cookieStore = await cookies()
+  const mockToken = `mock-token-${user.id}-${Date.now()}`
+
+  cookieStore.set("auth-token", mockToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  })
+
+  cookieStore.set(
+    "user-data",
+    JSON.stringify({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    }),
+    {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    },
+  )
+
   return {
-    success: false,
-    message: "Login failed",
+    success: true,
+    message: "Login successful",
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
+    token: mockToken,
   }
 }
 
-export async function logoutUser() {
+export async function logoutUser(): Promise<void> {
   const cookieStore = await cookies()
 
-  // Get the token for logout API call
-  const token = cookieStore.get("auth-token")?.value
-
-  if (token && !token.startsWith("mock-")) {
-    try {
-      // Call Laravel logout endpoint
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-      })
-    } catch (error) {
-      console.error("Logout API error:", error)
-    }
-  }
-
-  // Clear cookies
+  // Clear authentication cookies
   cookieStore.delete("auth-token")
-  cookieStore.delete("user-role")
+  cookieStore.delete("user-data")
 
+  // Redirect to login page
   redirect("/login")
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<User | null> {
   try {
     const cookieStore = await cookies()
-    const tokenCookie = cookieStore.get("auth-token")
-    const roleCookie = cookieStore.get("user-role")
+    const userData = cookieStore.get("user-data")
 
-    if (!tokenCookie || !roleCookie) {
+    if (!userData?.value) {
       return null
     }
 
-    // If using mock token, return mock user data
-    if (tokenCookie.value.startsWith("mock-")) {
-      return {
-        id: 1,
-        name: "Mock User",
-        email: "user@nis.edu.kz",
-        role: roleCookie.value,
-      }
-    }
-
-    // Verify token with backend
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${tokenCookie.value}`,
-          Accept: "application/json",
-        },
-      })
-
-      if (!response.ok) {
-        return null
-      }
-
-      const result = await response.json()
-      return result.user
-    } catch (error) {
-      console.warn("Backend verification failed, using cached user data")
-      return {
-        id: 1,
-        name: "Cached User",
-        email: "user@nis.edu.kz",
-        role: roleCookie.value,
-      }
-    }
+    return JSON.parse(userData.value) as User
   } catch (error) {
-    console.error("Session error:", error)
+    console.error("Error getting current user:", error)
     return null
   }
+}
+
+export async function checkAuth(): Promise<boolean> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth-token")
+  return !!token?.value
+}
+
+export async function requireAuth(): Promise<User> {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/login")
+  }
+
+  return user
+}
+
+export async function requireRole(allowedRoles: string[]): Promise<User> {
+  const user = await requireAuth()
+
+  if (!allowedRoles.includes(user.role)) {
+    redirect("/unauthorized")
+  }
+
+  return user
 }
