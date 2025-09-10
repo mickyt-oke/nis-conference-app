@@ -29,10 +29,9 @@ export function LoginForm() {
               height={80}
               className="rounded-full border-4 border-green-600"
             />
-            <Shield className="absolute -bottom-2 -right-2 h-8 w-8 bg-green-600 text-white rounded-full p-1" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900">{t("login")} to NIS Conference</h2>
+        <h2 className="text-3xl font-bold text-gray-900">{t("login")} to NIS Conference Portal</h2>
         <p className="mt-2 text-sm text-gray-600">Access the conference management system</p>
       </div>
 
@@ -98,14 +97,14 @@ export function LoginForm() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          {/* <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">Test Credentials:</p>
             <div className="mt-2 text-xs text-gray-500 space-y-1">
               <p>Admin: admin / admin123</p>
               <p>Supervisor: supervisor / super123</p>
               <p>User: user / user123</p>
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
