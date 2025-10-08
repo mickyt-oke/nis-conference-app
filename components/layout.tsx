@@ -6,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Shield, Play, Radio, Menu } from "lucide-react"
+import { Play, Radio, Menu } from "lucide-react"
 import { Footer } from "@/components/footer"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { LanguageSelector } from "@/components/language-selector"
@@ -18,7 +18,7 @@ interface LayoutProps {
   showLoading?: boolean
 }
 
-export function Layout({ children, showLoading = false }: LayoutProps) {
+function Layout({ children, showLoading = false }: LayoutProps) {
   const { t } = useLanguage()
   const [isLive, setIsLive] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -42,7 +42,6 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                   height={48}
                   className="object-contain"
                 />
-               
               </div>
               <div>
                 <h1 className="text-xl font-bold">Nigeria Immigration Service</h1>
@@ -200,3 +199,6 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
     </div>
   )
 }
+
+export { Layout }
+export default Layout

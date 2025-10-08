@@ -3,207 +3,179 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
-
-interface LoginResponse {
+interface LoginResult {
   success: boolean
-  token?: string
-  user?: {
-    id: number
-    name: string
-    email: string
-    role: string
-  }
   message?: string
   redirectTo?: string
-}
-
-interface User {
-  id: number
-  name: string
-  email: string
-  role: string
+  user?: {
+    id: string
+    email: string
+    name: string
+    role: string
+  }
 }
 
 // Mock users for development
-const mockUsers = [
-  { id: 1, name: "Admin User", email: "admin@nis.edu.kw", password: "admin123", role: "admin" },
-  { id: 2, name: "Supervisor", email: "supervisor@nis.edu.kw", password: "supervisor123", role: "supervisor" },
-  { id: 3, name: "Regular User", email: "user@nis.edu.kw", password: "user123", role: "user" },
+const MOCK_USERS = [
+  { id: "1", email: "admin@nis.gov.ng", password: "admin123", name: "Admin User", role: "admin" },
+  { id: "2", email: "supervisor@nis.gov.ng", password: "supervisor123", name: "Supervisor User", role: "supervisor" },
+  { id: "3", email: "user@nis.gov.ng", password: "user123", name: "Regular User", role: "user" },
 ]
 
-export async function loginAction(prevState: any, formData: FormData): Promise<LoginResponse> {
+export async function loginAction(prevState: any, formData: FormData): Promise<LoginResult> {
   try {
     const email = formData.get("email") as string
     const password = formData.get("password") as string
 
     if (!email || !password) {
-      return { success: false, message: "Email and password are required" }
+      return {
+        success: false,
+        message: "Please provide both email and password",
+      }
     }
 
-    // Try Laravel backend first
+    // Try Laravel backend first with timeout
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000)
+
+      const response = await fetch(`${apiUrl}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify({ email, password }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         const data = await response.json()
 
-        if (data.success && data.token) {
-          // Set secure cookie
-          const cookieStore = cookies()
-          cookieStore.set("auth_token", data.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24 * 7, // 7 days
-          })
+        // Set auth cookie
+        const cookieStore = await cookies()
+        cookieStore.set("auth_token", data.token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+        })
 
-          // Store user data
-          cookieStore.set("user_data", JSON.stringify(data.user), {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24 * 7, // 7 days
-          })
+        cookieStore.set("user_data", JSON.stringify(data.user), {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 7,
+        })
 
-          // Return success with redirect info instead of redirecting directly
-          const redirectTo =
-            data.user.role === "admin" ? "/admin" : data.user.role === "supervisor" ? "/supervisor" : "/dashboard"
-
-          return {
-            success: true,
-            token: data.token,
-            user: data.user,
-            redirectTo,
-            message: "Login successful",
-          }
+        // Return success with redirect
+        return {
+          success: true,
+          message: "Login successful",
+          redirectTo:
+            data.user.role === "admin" ? "/admin" : data.user.role === "supervisor" ? "/supervisor" : "/dashboard",
+          user: data.user,
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("Laravel backend not available, using mock authentication")
     }
 
     // Fallback to mock authentication
-    const user = mockUsers.find((u) => u.email === email && u.password === password)
+    const user = MOCK_USERS.find((u) => u.email === email && u.password === password)
 
-    if (user) {
-      const mockToken = `mock_token_${user.id}_${Date.now()}`
-      const userData = { id: user.id, name: user.name, email: user.email, role: user.role }
-
-      // Set mock cookies
-      const cookieStore = cookies()
-      cookieStore.set("auth_token", mockToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      cookieStore.set("user_data", JSON.stringify(userData), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      // Return success with redirect info instead of redirecting directly
-      const redirectTo = user.role === "admin" ? "/admin" : user.role === "supervisor" ? "/supervisor" : "/dashboard"
-
+    if (!user) {
       return {
-        success: true,
-        token: mockToken,
-        user: userData,
-        redirectTo,
-        message: "Login successful",
+        success: false,
+        message: "Invalid email or password",
       }
     }
 
-    return { success: false, message: "Invalid email or password" }
-  } catch (error) {
+    // Set mock auth cookies
+    const cookieStore = await cookies()
+    cookieStore.set("auth_token", `mock_token_${user.id}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+    })
+
+    cookieStore.set(
+      "user_data",
+      JSON.stringify({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      }),
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+      },
+    )
+
+    return {
+      success: true,
+      message: "Login successful",
+      redirectTo: user.role === "admin" ? "/admin" : user.role === "supervisor" ? "/supervisor" : "/dashboard",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    }
+  } catch (error: any) {
     console.error("Login error:", error)
-    return { success: false, message: "An error occurred during login" }
-  }
-}
-
-export async function loginUser(formData: FormData) {
-  return loginAction(null, formData)
-}
-
-export async function logoutUser(): Promise<void> {
-  try {
-    const cookieStore = cookies()
-
-    // Try to logout from Laravel backend
-    const token = cookieStore.get("auth_token")?.value
-    if (token && !token.startsWith("mock_token_")) {
-      try {
-        await fetch(`${API_BASE_URL}/auth/logout`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        })
-      } catch (error) {
-        console.log("Backend logout failed")
-      }
+    return {
+      success: false,
+      message: error.message || "An unexpected error occurred",
     }
-
-    // Clear cookies
-    cookieStore.delete("auth_token")
-    cookieStore.delete("user_data")
-  } catch (error) {
-    console.error("Logout error:", error)
   }
+}
 
+export async function logoutUser() {
+  const cookieStore = await cookies()
+  cookieStore.delete("auth_token")
+  cookieStore.delete("user_data")
   redirect("/login")
 }
 
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser() {
   try {
-    const cookieStore = cookies()
-    const userData = cookieStore.get("user_data")?.value
+    const cookieStore = await cookies()
+    const userData = cookieStore.get("user_data")
 
-    if (userData) {
-      return JSON.parse(userData)
+    if (!userData) {
+      return null
     }
-  } catch (error) {
-    console.error("Failed to get current user:", error)
-  }
 
-  return null
-}
-
-export async function checkAuth(): Promise<boolean> {
-  try {
-    const cookieStore = cookies()
-    const token = cookieStore.get("auth_token")?.value
-    return !!token
+    return JSON.parse(userData.value)
   } catch (error) {
-    console.error("Auth check error:", error)
-    return false
+    return null
   }
 }
 
-export async function requireAuth(): Promise<User> {
+export async function checkAuth() {
   const user = await getCurrentUser()
-  if (!user) {
+  return !!user
+}
+
+export async function requireAuth() {
+  const isAuthenticated = await checkAuth()
+  if (!isAuthenticated) {
     redirect("/login")
   }
-  return user
 }
 
-export async function requireRole(allowedRoles: string[]): Promise<User> {
-  const user = await requireAuth()
-  if (!allowedRoles.includes(user.role)) {
+export async function requireRole(role: string) {
+  const user = await getCurrentUser()
+  if (!user || user.role !== role) {
     redirect("/unauthorized")
   }
-  return user
 }
