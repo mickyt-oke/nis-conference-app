@@ -2,186 +2,181 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import bcrypt from "bcryptjs"
 
-interface LoginResponse {
-  success: boolean
-  message: string
-  user?: {
-    id: number
-    email: string
-    name: string
-    role: string
-  }
-  token?: string
-}
-
-interface User {
-  id: number
-  email: string
-  name: string
-  role: string
-}
-
-// Mock users for development
-const mockUsers = [
-  { id: 1, email: "admin@nis.edu.kh", password: "admin123", name: "Admin User", role: "admin" },
-  { id: 2, email: "supervisor@nis.edu.kh", password: "supervisor123", name: "Supervisor User", role: "supervisor" },
-  { id: 3, email: "user@nis.edu.kh", password: "user123", name: "Regular User", role: "user" },
+// Simulated database - In production, this would be a real database
+const users = [
+  {
+    id: 1,
+    username: "admin",
+    email: "admin@immigration.gov.ng",
+    password: "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // admin123
+    role: "admin",
+    name: "System Administrator",
+    department: "IT Department",
+    status: "active",
+    lastLogin: null,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
+  {
+    id: 2,
+    username: "supervisor",
+    email: "supervisor@immigration.gov.ng",
+    password: "$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm", // super123
+    role: "supervisor",
+    name: "Department Supervisor",
+    department: "Operations",
+    status: "active",
+    lastLogin: null,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
+  {
+    id: 3,
+    username: "user",
+    email: "user@immigration.gov.ng",
+    password: "$2a$10$6BjcQVKzjqNq2B5p2RealOuAuXMcPz7PotgGQ/E1NcG/ExD2vgdaa", // user123
+    role: "user",
+    name: "Regular User",
+    department: "General",
+    status: "active",
+    lastLogin: null,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  },
 ]
 
-export async function loginAction(formData: FormData): Promise<LoginResponse> {
-  const email = formData.get("email") as string
-  const password = formData.get("password") as string
-
-  if (!email || !password) {
-    return {
-      success: false,
-      message: "Email and password are required",
-    }
+interface LoginResult {
+  success: boolean
+  error?: string
+  user?: {
+    id: number
+    username: string
+    email: string
+    role: string
+    name: string
+    department: string
   }
+}
 
+export async function loginUser(formData: FormData): Promise<LoginResult> {
   try {
-    // Try to connect to Laravel backend
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
+    const username = formData.get("username") as string
+    const password = formData.get("password") as string
+    const remember = formData.get("remember") === "on"
 
-    const response = await fetch(`${apiUrl}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    })
-
-    if (response.ok) {
-      const data = await response.json()
-
-      // Set authentication cookie
-      const cookieStore = await cookies()
-      cookieStore.set("auth-token", data.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
-      cookieStore.set("user-data", JSON.stringify(data.user), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      })
-
+    // Validation
+    if (!username || !password) {
       return {
-        success: true,
-        message: "Login successful",
-        user: data.user,
-        token: data.token,
+        success: false,
+        error: "Username and password are required",
       }
     }
-  } catch (error) {
-    console.log("Laravel backend not available, using mock authentication")
-  }
 
-  // Fallback to mock authentication
-  const user = mockUsers.find((u) => u.email === email && u.password === password)
+    // Find user by username or email
+    const user = users.find((u) => u.username === username || u.email === username)
 
-  if (!user) {
-    return {
-      success: false,
-      message: "Invalid email or password",
+    if (!user) {
+      return {
+        success: false,
+        error: "Invalid username or password",
+      }
     }
-  }
 
-  // Set mock authentication cookies
-  const cookieStore = await cookies()
-  const mockToken = `mock-token-${user.id}-${Date.now()}`
+    // Check if user is active
+    if (user.status !== "active") {
+      return {
+        success: false,
+        error: "Account is inactive. Please contact administrator.",
+      }
+    }
 
-  cookieStore.set("auth-token", mockToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  })
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password)
 
-  cookieStore.set(
-    "user-data",
-    JSON.stringify({
-      id: user.id,
+    if (!isValidPassword) {
+      return {
+        success: false,
+        error: "Invalid username or password",
+      }
+    }
+
+    // Create session
+    const sessionData = {
+      userId: user.id,
+      username: user.username,
       email: user.email,
-      name: user.name,
       role: user.role,
-    }),
-    {
+      name: user.name,
+      department: user.department,
+      loginTime: new Date().toISOString(),
+    }
+
+    // Set session cookie
+    const cookieStore = await cookies()
+    const maxAge = remember ? 30 * 24 * 60 * 60 : 24 * 60 * 60 // 30 days or 1 day
+
+    cookieStore.set("session", JSON.stringify(sessionData), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    },
-  )
+      maxAge: maxAge,
+      path: "/",
+    })
 
-  return {
-    success: true,
-    message: "Login successful",
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    },
-    token: mockToken,
+    // Update last login (in real app, this would update the database)
+    user.lastLogin = new Date()
+
+    // Log successful login
+    console.log(`Successful login: ${user.username} (${user.role}) at ${new Date().toISOString()}`)
+
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        department: user.department,
+      },
+    }
+  } catch (error) {
+    console.error("Login error:", error)
+    return {
+      success: false,
+      error: "An internal error occurred. Please try again.",
+    }
   }
 }
 
-export async function logoutUser(): Promise<void> {
+export async function logoutUser() {
   const cookieStore = await cookies()
-
-  // Clear authentication cookies
-  cookieStore.delete("auth-token")
-  cookieStore.delete("user-data")
-
-  // Redirect to login page
+  cookieStore.delete("session")
   redirect("/login")
 }
 
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser() {
   try {
     const cookieStore = await cookies()
-    const userData = cookieStore.get("user-data")
+    const sessionCookie = cookieStore.get("session")
 
-    if (!userData?.value) {
+    if (!sessionCookie) {
       return null
     }
 
-    return JSON.parse(userData.value) as User
+    const sessionData = JSON.parse(sessionCookie.value)
+
+    // Verify session is still valid
+    const user = users.find((u) => u.id === sessionData.userId)
+    if (!user || user.status !== "active") {
+      return null
+    }
+
+    return sessionData
   } catch (error) {
-    console.error("Error getting current user:", error)
+    console.error("Session error:", error)
     return null
   }
-}
-
-export async function checkAuth(): Promise<boolean> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get("auth-token")
-  return !!token?.value
-}
-
-export async function requireAuth(): Promise<User> {
-  const user = await getCurrentUser()
-
-  if (!user) {
-    redirect("/login")
-  }
-
-  return user
-}
-
-export async function requireRole(allowedRoles: string[]): Promise<User> {
-  const user = await requireAuth()
-
-  if (!allowedRoles.includes(user.role)) {
-    redirect("/unauthorized")
-  }
-
-  return user
 }

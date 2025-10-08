@@ -10,23 +10,23 @@ import Image from "next/image"
 const attractions = [
   {
     id: 1,
-    name: "Aso Rock",
+    name: "Elegushi Beach",
     category: "Landmark",
     rating: 4.8,
     distance: "5.2 km",
     duration: "15 min",
     image: "/placeholder.svg?height=200&width=300&text=Aso+Rock",
-    description: "Iconic monolithic rock formation and seat of Nigerian government",
+    description: "Monumental beach with vibrant nightlife and scenic views",
   },
   {
     id: 2,
-    name: "Nigerian National Mosque",
+    name: "Nigerian National Museum",
     category: "Religious",
     rating: 4.6,
     distance: "3.8 km",
     duration: "12 min",
     image: "/placeholder.svg?height=200&width=300&text=National+Mosque",
-    description: "Beautiful Islamic architecture and spiritual center",
+    description: "Cultural museum showcasing Nigerian art, history, and archaeology",
   },
   {
     id: 3,
@@ -40,33 +40,33 @@ const attractions = [
   },
   {
     id: 4,
-    name: "Millennium Park",
+    name: "Nike Arts Gallery",
     category: "Recreation",
     rating: 4.7,
     distance: "2.9 km",
     duration: "8 min",
     image: "/placeholder.svg?height=200&width=300&text=Millennium+Park",
-    description: "Largest public park in Abuja with beautiful landscapes",
+    description: "Contemporary art gallery featuring works by Nigerian and African artists",
   },
   {
     id: 5,
-    name: "Jabi Lake Mall",
+    name: "Lekki Conservation Centre",
     category: "Shopping",
     rating: 4.4,
     distance: "6.7 km",
     duration: "18 min",
     image: "/placeholder.svg?height=200&width=300&text=Jabi+Lake+Mall",
-    description: "Modern shopping complex with lake views and dining",
+    description: "Nature reserve with canopy walkways and diverse wildlife",
   },
   {
     id: 6,
-    name: "Nigerian National Christian Centre",
+    name: "Badagry Heritage Museum",
     category: "Religious",
     rating: 4.6,
     distance: "4.5 km",
     duration: "14 min",
     image: "/placeholder.svg?height=200&width=300&text=Christian+Centre",
-    description: "Magnificent cathedral and center for Christian worship",
+    description: "Museum dedicated to the history of the transatlantic slave trade in Nigeria",
   },
 ]
 
@@ -99,7 +99,7 @@ export function ConferenceDestination() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("conferenceDestination")}</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t("destinationDesc")}</p>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">Discover the beauty of Lagos State while attending the conference.</p>
         </div>
 
         {/* Attractions Grid */}

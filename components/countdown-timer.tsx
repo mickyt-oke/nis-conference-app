@@ -15,7 +15,7 @@ export function CountdownTimer() {
   })
 
   useEffect(() => {
-    const targetDate = new Date("2025-03-15T09:00:00").getTime()
+    const targetDate = new Date("2025-11-05T00:00:00").getTime()
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
@@ -44,7 +44,7 @@ export function CountdownTimer() {
             <Calendar className="h-5 w-5" />
             <span className="text-sm font-medium">{t("eventStarts")}</span>
           </div>
-          <div className="text-xs text-green-200">March 15, 2025 • 9:00 AM</div>
+          <div className="text-xs text-green-200">November 5, 2025 • 12:00 PM</div>
         </div>
 
         <div className="grid grid-cols-4 gap-4 text-center">

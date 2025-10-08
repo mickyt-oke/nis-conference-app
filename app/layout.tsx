@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "NIS Conference Management System",
-  description: "Nigeria Immigration Service Conference Management Platform",
-    generator: 'v0.app'
+  description: "Nigeria Immigration Service Conference & Events Platform",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({

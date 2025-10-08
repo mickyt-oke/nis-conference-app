@@ -40,9 +40,9 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                   alt="Nigeria Immigration Service Logo"
                   width={48}
                   height={48}
-                  className="rounded-full border-2 border-white/20"
+                  className="object-contain"
                 />
-                <Shield className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-600 rounded-full p-1" />
+               
               </div>
               <div>
                 <h1 className="text-xl font-bold">Nigeria Immigration Service</h1>
@@ -66,9 +66,6 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
               </Link>
               <Link href="/gallery" className="hover:text-green-200 transition-colors">
                 {t("gallery")}
-              </Link>
-              <Link href="/media" className="hover:text-green-200 transition-colors">
-                {t("media")}
               </Link>
               <Link href="/register" className="hover:text-green-200 transition-colors">
                 {t("register")}
@@ -147,13 +144,6 @@ export function Layout({ children, showLoading = false }: LayoutProps) {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {t("gallery")}
-                  </Link>
-                  <Link
-                    href="/media"
-                    className="hover:text-green-200 transition-colors py-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {t("media")}
                   </Link>
                   <Link
                     href="/register"

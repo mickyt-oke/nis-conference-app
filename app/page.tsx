@@ -34,11 +34,11 @@ const ContactSection = lazy(() =>
 )
 
 const heroImages = [
-  "/placeholder.svg?height=600&width=1200&text=Conference+Hall",
-  "/placeholder.svg?height=600&width=1200&text=Networking+Event",
-  "/placeholder.svg?height=600&width=1200&text=Keynote+Speaker",
-  "/placeholder.svg?height=600&width=1200&text=Panel+Discussion",
-  "/placeholder.svg?height=600&width=1200&text=Awards+Ceremony",
+  "/nis-cover.jpg?height=600&width=1200&text=Conference+Hall",
+  "/conference-1.jpg?height=600&width=1200&text=Networking+Event",
+  "/conference-2.jpg?height=600&width=1200&text=Keynote+Speaker",
+  "/conference-3.jpg?height=600&width=1200&text=Panel+Discussion",
+  "/conference-5.jpg?height=600&width=1200&text=Awards+Ceremony",
 ]
 
 export default function HomePage() {
@@ -84,7 +84,7 @@ export default function HomePage() {
     {
       id: 1,
       title: "Opening Ceremony & Keynote Address",
-      date: "March 15, 2025",
+      date: "November 5, 2025",
       time: "9:00 AM - 11:00 AM",
       location: "Main Auditorium",
       speaker: "Hon. Minister of Interior",
@@ -93,7 +93,7 @@ export default function HomePage() {
     {
       id: 2,
       title: "Digital Immigration Systems Panel",
-      date: "March 15, 2025",
+      date: "November 6, 2025",
       time: "2:00 PM - 4:00 PM",
       location: "Conference Hall A",
       speaker: "Tech Industry Leaders",
@@ -102,7 +102,7 @@ export default function HomePage() {
     {
       id: 3,
       title: "Border Security Workshop",
-      date: "March 16, 2025",
+      date: "November 6, 2025",
       time: "10:00 AM - 12:00 PM",
       location: "Workshop Room 1",
       speaker: "Security Experts",
@@ -122,7 +122,7 @@ export default function HomePage() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1))
-    }, 5000)
+    }, 7000)
 
     return () => clearInterval(interval)
   }, [])
@@ -157,7 +157,7 @@ export default function HomePage() {
           <div className="mb-8">
             <Badge className="bg-green-600 hover:bg-green-700 text-white mb-4">{t("annualConference")}</Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              {t("heroTitle")}
+              {t("heroTitle")}{" "} 
               <span className="block text-green-400">{t("heroSubtitle")}</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">{t("heroDescription")}</p>
@@ -224,7 +224,7 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("conferenceManagementFeatures")}</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our comprehensive platform designed to enhance your conference experience
+              Explore our comprehensive platform designed as a repository for all conferences and
             </p>
           </div>
 

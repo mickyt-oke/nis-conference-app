@@ -234,7 +234,7 @@ export function Footer() {
             <div className="flex items-center space-x-4 text-sm text-green-300">
               <span>Conference Management System v1.0</span>
               <span>•</span>
-              <span>Powered by NIS ICT Directorate</span>
+              <span>Powered by NIS ICT Web Team</span>
             </div>
           </div>
         </div>
