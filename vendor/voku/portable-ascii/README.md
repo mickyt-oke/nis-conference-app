@@ -42,7 +42,7 @@ The project based on ...
 
 If you like a more Object Oriented Way to edit strings, then you can take a look at [voku/Stringy](https://github.com/voku/Stringy), it's a fork of "danielstjules/Stringy" but it used the "Portable ASCII"-Class and some extra methods. 
 
-```php
+\`\`\`php
 // Portable ASCII
 use voku\helper\ASCII;
 ASCII::to_transliterate('déjà σσς iıii'); // 'deja sss iiii'
@@ -51,12 +51,12 @@ ASCII::to_transliterate('déjà σσς iıii'); // 'deja sss iiii'
 use Stringy\Stringy as S;
 $stringy = S::create('déjà σσς iıii');
 $stringy->toTransliterate();              // 'deja sss iiii'
-```
+\`\`\`
 
 ## Install "Portable ASCII" via "composer require"
-```shell
+\`\`\`shell
 composer require voku/portable-ascii
-```
+\`\`\`
 
 ##  Why Portable ASCII?[]()
 I need ASCII char handling in different classes and before I added this functions into "Portable UTF-8",
@@ -71,7 +71,7 @@ but this repo is more modular and portable, because it has no dependencies.
 ## Usage
 
 Example: ASCII::to_ascii()
-```php
+\`\`\`php
   echo ASCII::to_ascii('�Düsseldorf�', 'de');
   
   // will output
@@ -81,7 +81,7 @@ Example: ASCII::to_ascii()
   
   // will output
   // Dusseldorf
-```
+\`\`\`
 
 # Portable ASCII | API
 
@@ -420,15 +420,15 @@ But you can also use NULL to keep the unknown chars.</p>`
 
 1) [Composer](https://getcomposer.org) is a prerequisite for running the tests.
 
-```
+\`\`\`
 composer install
-```
+\`\`\`
 
 2) The tests can be executed by running this command from the root directory:
 
-```bash
+\`\`\`bash
 ./vendor/bin/phpunit
-```
+\`\`\`
 
 ### Support
 
