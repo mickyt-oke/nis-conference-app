@@ -3,29 +3,52 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
+interface User {
+  id: string
+  email: string
+  name: string
+  role: string
+}
+
 interface LoginResult {
   success: boolean
   message?: string
   redirectTo?: string
-  user?: {
-    id: string
-    email: string
-    name: string
-    role: string
-  }
+  user?: User
 }
 
-// Mock users for development
-const MOCK_USERS = [
-  { id: "1", email: "admin@nis.gov.ng", password: "admin123", name: "Admin User", role: "admin" },
-  { id: "2", email: "supervisor@nis.gov.ng", password: "supervisor123", name: "Supervisor User", role: "supervisor" },
-  { id: "3", email: "user@nis.gov.ng", password: "user123", name: "Regular User", role: "user" },
-]
+/**
+ * Helper to set authentication cookies
+ */
+async function setAuthCookies(cookieStore: Promise<ReturnType<typeof cookies>>, token: string, user: User) {
+  const cookiesResolved = await cookieStore
+  const isProduction = process.env.NODE_ENV === "production"
+  cookiesResolved.set("auth_token", token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+  })
+  cookiesResolved.set("user_data", JSON.stringify(user), {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7,
+  })
+}
 
-export async function loginAction(prevState: any, formData: FormData): Promise<LoginResult> {
+/**
+ * Login action - attempts to login user with backend API and sets cookies on success
+ * @param formData - FormData containing 'email' and 'password' fields
+ * @returns Promise<LoginResult>
+ */
+export async function loginAction(formData: FormData): Promise<LoginResult> {
   try {
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    const emailRaw = formData.get("email")
+    const passwordRaw = formData.get("password")
+
+    const email = typeof emailRaw === "string" ? emailRaw.trim().toLowerCase() : ""
+    const password = typeof passwordRaw === "string" ? passwordRaw : ""
 
     if (!email || !password) {
       return {
@@ -34,101 +57,40 @@ export async function loginAction(prevState: any, formData: FormData): Promise<L
       }
     }
 
-    // Try Laravel backend first with timeout
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 5000)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
-      const response = await fetch(`${apiUrl}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        signal: controller.signal,
-      })
-
-      clearTimeout(timeoutId)
-
-      if (response.ok) {
-        const data = await response.json()
-
-        // Set auth cookie
-        const cookieStore = await cookies()
-        cookieStore.set("auth_token", data.token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-        })
-
-        cookieStore.set("user_data", JSON.stringify(data.user), {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          maxAge: 60 * 60 * 24 * 7,
-        })
-
-        // Return success with redirect
-        return {
-          success: true,
-          message: "Login successful",
-          redirectTo:
-            data.user.role === "admin" ? "/admin" : data.user.role === "supervisor" ? "/supervisor" : "/dashboard",
-          user: data.user,
-        }
-      }
-    } catch (error: any) {
-      console.log("Laravel backend not available, using mock authentication")
-    }
-
-    // Fallback to mock authentication
-    const user = MOCK_USERS.find((u) => u.email === email && u.password === password)
-
-    if (!user) {
-      return {
-        success: false,
-        message: "Invalid email or password",
-      }
-    }
-
-    // Set mock auth cookies
-    const cookieStore = await cookies()
-    cookieStore.set("auth_token", `mock_token_${user.id}`, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+    const response = await fetch(`${apiUrl}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ email, password }),
     })
 
-    cookieStore.set(
-      "user_data",
-      JSON.stringify({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      }),
-      {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7,
-      },
-    )
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      return {
+        success: false,
+        message: errorData.message || "Invalid email or password",
+      }
+    }
+
+    const data = await response.json()
+
+    const cookieStore = cookies()
+    await setAuthCookies(cookieStore, data.token, data.user)
+
+    // Determine redirect based on user role
+    let redirectTo = "/dashboard"
+    if (data.user.role === "admin") redirectTo = "/admin"
+    else if (data.user.role === "supervisor") redirectTo = "/supervisor"
 
     return {
       success: true,
       message: "Login successful",
-      redirectTo: user.role === "admin" ? "/admin" : user.role === "supervisor" ? "/supervisor" : "/dashboard",
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
+      redirectTo,
+      user: data.user,
     }
   } catch (error: any) {
     console.error("Login error:", error)
@@ -139,14 +101,21 @@ export async function loginAction(prevState: any, formData: FormData): Promise<L
   }
 }
 
-export async function logoutUser() {
+/**
+ * Logout action - clears auth cookies and redirects to login page
+ */
+export async function logoutUser(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.delete("auth_token")
   cookieStore.delete("user_data")
   redirect("/login")
 }
 
-export async function getCurrentUser() {
+/**
+ * Get current authenticated user from cookies, or null if none
+ * @returns Promise<User | null>
+ */
+export async function getCurrentUser(): Promise<User | null> {
   try {
     const cookieStore = await cookies()
     const userData = cookieStore.get("user_data")
@@ -155,25 +124,36 @@ export async function getCurrentUser() {
       return null
     }
 
-    return JSON.parse(userData.value)
+    return JSON.parse(userData.value) as User
   } catch (error) {
     return null
   }
 }
 
-export async function checkAuth() {
+/**
+ * Check if user is authenticated
+ * @returns Promise<boolean>
+ */
+export async function checkAuth(): Promise<boolean> {
   const user = await getCurrentUser()
   return !!user
 }
 
-export async function requireAuth() {
+/**
+ * Require authentication - redirects to login if not authenticated
+ */
+export async function requireAuth(): Promise<void> {
   const isAuthenticated = await checkAuth()
   if (!isAuthenticated) {
     redirect("/login")
   }
 }
 
-export async function requireRole(role: string) {
+/**
+ * Require user to have specific role, redirects to unauthorized page if role mismatches
+ * @param role string - role to require
+ */
+export async function requireRole(role: string): Promise<void> {
   const user = await getCurrentUser()
   if (!user || user.role !== role) {
     redirect("/unauthorized")
