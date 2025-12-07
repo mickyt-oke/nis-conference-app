@@ -41,13 +41,13 @@ All internal native functions calls of Guzzle are now prefixed with a slash. Thi
 change makes it impossible for method overloading by other libraries or applications.
 Example:
 
-```php
+\`\`\`php
 // Before:
 curl_version();
 
 // After:
 \curl_version();
-```
+\`\`\`
 
 For the full diff you can check [here](https://github.com/guzzle/guzzle/compare/6.5.4..master).
 
@@ -157,7 +157,7 @@ also asynchronous.
 
 v5:
 
-```php
+\`\`\`php
 use GuzzleHttp\Event\BeforeEvent;
 $client = new GuzzleHttp\Client();
 // Get the emitter and listen to the before event.
@@ -165,7 +165,7 @@ $client->getEmitter()->on('before', function (BeforeEvent $e) {
     // Guzzle v5 events relied on mutation
     $e->getRequest()->setHeader('X-Foo', 'Bar');
 });
-```
+\`\`\`
 
 v6:
 
@@ -174,7 +174,7 @@ middleware. The idiomatic way in v6 to modify the request/response lifecycle is
 to setup a handler middleware stack up front and inject the handler into a
 client.
 
-```php
+\`\`\`php
 use GuzzleHttp\Middleware;
 // Create a handler stack that has all of the default middlewares attached
 $handler = GuzzleHttp\HandlerStack::create();
@@ -185,7 +185,7 @@ $handler->push(Middleware::mapRequest(function (RequestInterface $request) {
 }));
 // Inject the handler into the client
 $client = new GuzzleHttp\Client(['handler' => $handler]);
-```
+\`\`\`
 
 ## POST Requests
 
@@ -338,7 +338,7 @@ Guzzle no longer requires Symfony's EventDispatcher component. Guzzle now uses
 - Use `attach()` instead of `addSubscriber()` and `detach()` instead of
   `removeSubscriber()`.
 
-```php
+\`\`\`php
 $mock = new Mock();
 // 3.x
 $request->getEventDispatcher()->addSubscriber($mock);
@@ -346,16 +346,16 @@ $request->getEventDispatcher()->removeSubscriber($mock);
 // 4.x
 $request->getEmitter()->attach($mock);
 $request->getEmitter()->detach($mock);
-```
+\`\`\`
 
 Use the `on()` method to add a listener rather than the `addListener()` method.
 
-```php
+\`\`\`php
 // 3.x
 $request->getEventDispatcher()->addListener('foo', function (Event $event) { /* ... */ } );
 // 4.x
 $request->getEmitter()->on('foo', function (Event $event, $name) { /* ... */ } );
-```
+\`\`\`
 
 ## Http
 
@@ -383,7 +383,7 @@ Calling methods like `get()`, `post()`, `head()`, etc. no longer create and
 return a request, but rather creates a request, sends the request, and returns
 the response.
 
-```php
+\`\`\`php
 // 3.0
 $request = $client->get('/');
 $response = $request->send();
@@ -394,7 +394,7 @@ $response = $client->get('/');
 // or, to mirror the previous behavior
 $request = $client->createRequest('GET', '/');
 $response = $client->send($request);
-```
+\`\`\`
 
 `GuzzleHttp\ClientInterface` has changed.
 
@@ -449,11 +449,11 @@ lifecycle of a request.
   a `GuzzleHttp\Post\PostBody` body if the body was passed as an array or if
   the method is POST and no body is provided.
 
-```php
+\`\`\`php
 $request = $client->createRequest('POST', '/');
 $request->getBody()->setField('foo', 'bar');
 $request->getBody()->addFile(new PostFile('file_key', fopen('/path/to/content', 'r')));
-```
+\`\`\`
 
 #### Headers
 
@@ -496,7 +496,7 @@ Streaming requests can now be created by a client directly, returning a
 `GuzzleHttp\Message\ResponseInterface` object that contains a body stream
 referencing an open PHP HTTP stream.
 
-```php
+\`\`\`php
 // 3.0
 use Guzzle\Stream\PhpStreamRequestFactory;
 $request = $client->get('/');
@@ -508,14 +508,14 @@ $data = $stream->read(1024);
 $response = $client->get('/', ['stream' => true]);
 // Read some data off of the stream in the response body
 $data = $response->getBody()->read(1024);
-```
+\`\`\`
 
 #### Redirects
 
 The `configureRedirects()` method has been removed in favor of a
 `allow_redirects` request option.
 
-```php
+\`\`\`php
 // Standard redirects with a default of a max of 5 redirects
 $request = $client->createRequest('GET', '/', ['allow_redirects' => true]);
 
@@ -523,7 +523,7 @@ $request = $client->createRequest('GET', '/', ['allow_redirects' => true]);
 $request = $client->createRequest('GET', '/', [
     'allow_redirects' => ['max' => 5, 'strict' => true]
 ]);
-```
+\`\`\`
 
 #### EntityBody
 
@@ -724,9 +724,9 @@ PHP requests are now implemented through the `GuzzleHttp\Adapter\StreamAdapter`.
 
 - You can now enable E_USER_DEPRECATED warnings to see if you are using any deprecated methods.:
 
-```php
+\`\`\`php
 \Guzzle\Common\Version::$emitWarnings = true;
-```
+\`\`\`
 
 The following APIs and options have been marked as deprecated:
 
@@ -904,14 +904,14 @@ If you still wish to reuse the same CurlMulti object with each client, then you 
 ServiceBuilder's `service_builder.create_client` event to inject a custom CurlMulti object into each client as it is
 created.
 
-```php
+\`\`\`php
 $multi = new Guzzle\Http\Curl\CurlMulti();
 $builder = Guzzle\Service\Builder\ServiceBuilder::factory('/path/to/config.json');
 $builder->addListener('service_builder.create_client', function ($event) use ($multi) {
     $event['client']->setCurlMulti($multi);
 }
 });
-```
+\`\`\`
 
 ### No default path
 
@@ -919,19 +919,19 @@ URLs no longer have a default path value of '/' if no path was specified.
 
 Before:
 
-```php
+\`\`\`php
 $request = $client->get('http://www.foo.com');
 echo $request->getUrl();
 // >> http://www.foo.com/
-```
+\`\`\`
 
 After:
 
-```php
+\`\`\`php
 $request = $client->get('http://www.foo.com');
 echo $request->getUrl();
 // >> http://www.foo.com
-```
+\`\`\`
 
 ### Less verbose BadResponseException
 
@@ -954,7 +954,7 @@ Change `\Guzzle\Service\Inspector::fromConfig` to `\Guzzle\Common\Collection::fr
 
 **Before**
 
-```php
+\`\`\`php
 use Guzzle\Service\Inspector;
 
 class YourClient extends \Guzzle\Service\Client
@@ -976,11 +976,11 @@ class YourClient extends \Guzzle\Service\Client
 
         return $client;
     }
-```
+\`\`\`
 
 **After**
 
-```php
+\`\`\`php
 use Guzzle\Common\Collection;
 
 class YourClient extends \Guzzle\Service\Client
@@ -1002,13 +1002,13 @@ class YourClient extends \Guzzle\Service\Client
 
         return $client;
     }
-```
+\`\`\`
 
 ### Convert XML Service Descriptions to JSON
 
 **Before**
 
-```xml
+\`\`\`xml
 <?xml version="1.0" encoding="UTF-8"?>
 <client>
     <commands>
@@ -1040,11 +1040,11 @@ class YourClient extends \Guzzle\Service\Client
         </command>
     </commands>
 </client>
-```
+\`\`\`
 
 **After**
 
-```json
+\`\`\`json
 {
     "name":       "Zendesk REST API v2",
     "apiVersion": "2012-12-31",
@@ -1139,7 +1139,7 @@ class YourClient extends \Guzzle\Service\Client
             }
         }
 }
-```
+\`\`\`
 
 ### Guzzle\Service\Description\ServiceDescription
 
@@ -1147,7 +1147,7 @@ Commands are now called Operations
 
 **Before**
 
-```php
+\`\`\`php
 use Guzzle\Service\Description\ServiceDescription;
 
 $sd = new ServiceDescription();
@@ -1155,11 +1155,11 @@ $sd->getCommands();     // @returns ApiCommandInterface[]
 $sd->hasCommand($name);
 $sd->getCommand($name); // @returns ApiCommandInterface|null
 $sd->addCommand($command); // @param ApiCommandInterface $command
-```
+\`\`\`
 
 **After**
 
-```php
+\`\`\`php
 use Guzzle\Service\Description\ServiceDescription;
 
 $sd = new ServiceDescription();
@@ -1167,7 +1167,7 @@ $sd->getOperations();           // @returns OperationInterface[]
 $sd->hasOperation($name);
 $sd->getOperation($name);       // @returns OperationInterface|null
 $sd->addOperation($operation);  // @param OperationInterface $operation
-```
+\`\`\`
 
 ### Guzzle\Common\Inflection\Inflector
 
@@ -1183,7 +1183,7 @@ Now `Guzzle\Plugin\Log\LogPlugin` and `Guzzle\Log` respectively.
 
 **Before**
 
-```php
+\`\`\`php
 use Guzzle\Common\Log\ClosureLogAdapter;
 use Guzzle\Http\Plugin\LogPlugin;
 
@@ -1192,11 +1192,11 @@ $client;
 
 // $verbosity is an integer indicating desired message verbosity level
 $client->addSubscriber(new LogPlugin(new ClosureLogAdapter(function($m) { echo $m; }, $verbosity = LogPlugin::LOG_VERBOSE);
-```
+\`\`\`
 
 **After**
 
-```php
+\`\`\`php
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Plugin\Log\LogPlugin;
@@ -1206,7 +1206,7 @@ $client;
 
 // $format is a string indicating desired message format -- @see MessageFormatter
 $client->addSubscriber(new LogPlugin(new ClosureLogAdapter(function($m) { echo $m; }, $format = MessageFormatter::DEBUG_FORMAT);
-```
+\`\`\`
 
 ### Guzzle\Http\Plugin\CurlAuthPlugin
 
@@ -1218,7 +1218,7 @@ Now `Guzzle\Plugin\Backoff\BackoffPlugin`, and other changes.
 
 **Before**
 
-```php
+\`\`\`php
 use Guzzle\Http\Plugin\ExponentialBackoffPlugin;
 
 $backoffPlugin = new ExponentialBackoffPlugin($maxRetries, array_merge(
@@ -1226,11 +1226,11 @@ $backoffPlugin = new ExponentialBackoffPlugin($maxRetries, array_merge(
     ));
 
 $client->addSubscriber($backoffPlugin);
-```
+\`\`\`
 
 **After**
 
-```php
+\`\`\`php
 use Guzzle\Plugin\Backoff\BackoffPlugin;
 use Guzzle\Plugin\Backoff\HttpBackoffStrategy;
 
@@ -1240,7 +1240,7 @@ $backoffPlugin = BackoffPlugin::getExponentialBackoff($maxRetries, array_merge(
         HttpBackoffStrategy::getDefaultFailureCodes(), array(429)
     ));
 $client->addSubscriber($backoffPlugin);
-```
+\`\`\`
 
 ### Known Issues
 

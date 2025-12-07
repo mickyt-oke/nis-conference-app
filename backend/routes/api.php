@@ -31,4 +31,3 @@ Route::middleware(['auth:api', 'role:supervisor'])->group(function () {
         return response()->json(['message' => 'Supervisor Dashboard']);
     });
 });
-

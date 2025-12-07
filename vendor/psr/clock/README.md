@@ -7,15 +7,15 @@ describes a clock. See the specification for more details.
 
 ## Installation
 
-```bash
+\`\`\`bash
 composer require psr/clock
-```
+\`\`\`
 
 ## Usage
 
 If you need a clock, you can use the interface like this:
 
-```php
+\`\`\`php
 <?php
 
 use Psr\Clock\ClockInterface;
@@ -36,7 +36,7 @@ class Foo
         // do something useful with that information
     }
 }
-```
+\`\`\`
 
 You can then pick one of the [implementations][implementation-url] of the interface to get a clock.
 
@@ -45,13 +45,13 @@ implement `Psr\Clock\ClockInterface` in your code.
 
 Don't forget to add `psr/clock-implementation` to your `composer.json`s `provides`-section like this:
 
-```json
+\`\`\`json
 {
   "provides": {
     "psr/clock-implementation": "1.0"
   }
 }
-```
+\`\`\`
 
 And please read the [specification text][specification-url] for details on the interface.
 

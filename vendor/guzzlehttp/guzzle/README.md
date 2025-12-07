@@ -21,7 +21,7 @@ trivial to integrate with web services.
   PHP streams, sockets, or non-blocking event loops.
 - Middleware system allows you to augment and compose client behavior.
 
-```php
+\`\`\`php
 $client = new \GuzzleHttp\Client();
 $response = $client->request('GET', 'https://api.github.com/repos/guzzle/guzzle');
 
@@ -36,7 +36,7 @@ $promise = $client->sendAsync($request)->then(function ($response) {
 });
 
 $promise->wait();
-```
+\`\`\`
 
 ## Help and docs
 
@@ -53,9 +53,9 @@ We use GitHub issues only to discuss bugs and new features. For support please r
 The recommended way to install Guzzle is through
 [Composer](https://getcomposer.org/).
 
-```bash
+\`\`\`bash
 composer require guzzlehttp/guzzle
-```
+\`\`\`
 
 
 ## Version Guidance

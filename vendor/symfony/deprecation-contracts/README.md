@@ -15,9 +15,9 @@ The function requires at least 3 arguments:
  - more arguments can be provided: they will be inserted in the message using `printf()` formatting
 
 Example:
-```php
+\`\`\`php
 trigger_deprecation('symfony/blockchain', '8.9', 'Using "%s" is deprecated, use "%s" instead.', 'bitcoin', 'fabcoin');
-```
+\`\`\`
 
 This will generate the following message:
 `Since symfony/blockchain 8.9: Using "bitcoin" is deprecated, use "fabcoin" instead.`

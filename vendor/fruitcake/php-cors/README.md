@@ -49,7 +49,7 @@ If `['*']` is provided to _allowedMethods_, _allowedOrigins_ or _allowedHeaders_
 
 ### Example: using the library
 
-```php
+\`\`\`php
 <?php
 
 use Fruitcake\Cors\CorsService;
@@ -69,7 +69,7 @@ $cors->handlePreflightRequest(Request $request);
 $cors->isActualRequestAllowed(Request $request);
 $cors->isCorsRequest(Request $request);
 $cors->isPreflightRequest(Request $request);
-```
+\`\`\`
 
 ## License
 

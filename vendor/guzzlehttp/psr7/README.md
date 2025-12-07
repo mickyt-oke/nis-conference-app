@@ -16,9 +16,9 @@ decorators.
 
 ## Installation
 
-```shell
+\`\`\`shell
 composer require guzzlehttp/psr7
-```
+\`\`\`
 
 ## Version Guidance
 
@@ -34,7 +34,7 @@ composer require guzzlehttp/psr7
 
 Reads from multiple streams, one after the other.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 $a = Psr7\Utils::streamFor('abc, ');
@@ -44,7 +44,7 @@ $composed = new Psr7\AppendStream([$a, $b]);
 $composed->addStream(Psr7\Utils::streamFor(' Above all listen to me'));
 
 echo $composed; // abc, 123. Above all listen to me.
-```
+\`\`\`
 
 
 ## BufferStream
@@ -58,13 +58,13 @@ This stream returns a "hwm" metadata value that tells upstream consumers
 what the configured high water mark of the stream is, or the maximum
 preferred size of the buffer.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 // When more than 1024 bytes are in the buffer, it will begin returning
 // false to writes. This is an indication that writers should slow down.
 $buffer = new Psr7\BufferStream(1024);
-```
+\`\`\`
 
 
 ## CachingStream
@@ -76,7 +76,7 @@ from a redirect). Data that is read from the remote stream will be buffered in
 a PHP temp stream so that previously read bytes are cached first in memory,
 then on disk.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 $original = Psr7\Utils::streamFor(fopen('http://www.google.com', 'r'));
@@ -89,7 +89,7 @@ echo $stream->tell();
 $stream->seek(0);
 echo $stream->tell();
 // 0
-```
+\`\`\`
 
 
 ## DroppingStream
@@ -99,7 +99,7 @@ echo $stream->tell();
 Stream decorator that begins dropping data once the size of the underlying
 stream becomes too full.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 // Create an empty stream
@@ -110,7 +110,7 @@ $dropping = new Psr7\DroppingStream($stream, 10);
 
 $dropping->write('01234567890123456789');
 echo $stream; // 0123456789
-```
+\`\`\`
 
 
 ## FnStream
@@ -122,7 +122,7 @@ Compose stream implementations based on a hash of functions.
 Allows for easy testing and extension of a provided stream without needing
 to create a concrete class for a simple extension point.
 
-```php
+\`\`\`php
 
 use GuzzleHttp\Psr7;
 
@@ -137,7 +137,7 @@ $fnStream = Psr7\FnStream::decorate($stream, [
 
 $fnStream->rewind();
 // Outputs: About to rewind - rewound!
-```
+\`\`\`
 
 
 ## InflateStream
@@ -158,7 +158,7 @@ to a Guzzle stream resource to be used as a Guzzle stream.
 Lazily reads or writes to a file that is opened only after an IO operation
 take place on the stream.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 $stream = new Psr7\LazyOpenStream('/path/to/file', 'r');
@@ -166,7 +166,7 @@ $stream = new Psr7\LazyOpenStream('/path/to/file', 'r');
 
 echo $stream->read(10);
 // The file is opened and read from only when needed.
-```
+\`\`\`
 
 
 ## LimitStream
@@ -177,7 +177,7 @@ LimitStream can be used to read a subset or slice of an existing stream object.
 This can be useful for breaking a large file into smaller pieces to be sent in
 chunks (e.g. Amazon S3's multipart upload API).
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 $original = Psr7\Utils::streamFor(fopen('/tmp/test.txt', 'r+'));
@@ -190,7 +190,7 @@ echo $stream->getSize();
 // >>> 1024
 echo $stream->tell();
 // >>> 0
-```
+\`\`\`
 
 
 ## MultipartStream
@@ -207,7 +207,7 @@ multipart/form-data stream.
 
 NoSeekStream wraps a stream and does not allow seeking.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 $original = Psr7\Utils::streamFor('foo');
@@ -220,7 +220,7 @@ var_export($noSeek->isSeekable());
 $noSeek->seek(0);
 var_export($noSeek->read(3));
 // NULL
-```
+\`\`\`
 
 
 ## PumpStream
@@ -249,7 +249,7 @@ For example, let's say we wanted to call a specific function each time the last
 byte is read from a stream. This could be implemented by overriding the
 `read()` method.
 
-```php
+\`\`\`php
 use Psr\Http\Message\StreamInterface;
 use GuzzleHttp\Psr7\StreamDecoratorTrait;
 
@@ -279,11 +279,11 @@ class EofCallbackStream implements StreamInterface
         return $result;
     }
 }
-```
+\`\`\`
 
 This decorator could be added to any existing stream and used like so:
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7;
 
 $original = Psr7\Utils::streamFor('foo');
@@ -298,7 +298,7 @@ $eofStream->read(1);
 $eofStream->seek(0);
 $eofStream->read(3);
 // echoes "EOF!"
-```
+\`\`\`
 
 
 ## PHP StreamWrapper
@@ -309,13 +309,13 @@ PSR-7 stream as a PHP stream resource.
 Use the `GuzzleHttp\Psr7\StreamWrapper::getResource()` method to create a PHP
 stream from a PSR-7 stream.
 
-```php
+\`\`\`php
 use GuzzleHttp\Psr7\StreamWrapper;
 
 $stream = GuzzleHttp\Psr7\Utils::streamFor('hello!');
 $resource = StreamWrapper::getResource($stream);
 echo fread($resource, 6); // outputs hello!
-```
+\`\`\`
 
 
 # Static API
@@ -329,10 +329,10 @@ There are various static methods available under the `GuzzleHttp\Psr7` namespace
 
 Returns the string representation of an HTTP message.
 
-```php
+\`\`\`php
 $request = new GuzzleHttp\Psr7\Request('GET', 'http://example.com');
 echo GuzzleHttp\Psr7\Message::toString($request);
-```
+\`\`\`
 
 
 ## `GuzzleHttp\Psr7\Message::bodySummary`
@@ -403,9 +403,9 @@ contains a key, this function will inject a key with a '' string value.
 Splits a HTTP header defined to contain a comma-separated list into
 each individual value:
 
-```
+\`\`\`
 $knownEtags = Header::splitList($request->getHeader('if-none-match'));
-```
+\`\`\`
 
 Example headers include `accept`, `cache-control` and `if-none-match`.
 
@@ -544,7 +544,7 @@ This method accepts the following `$resource` types:
   number of requested bytes are available. Any additional bytes will be
   buffered and used in subsequent reads.
 
-```php
+\`\`\`php
 $stream = GuzzleHttp\Psr7\Utils::streamFor('foo');
 $stream = GuzzleHttp\Psr7\Utils::streamFor(fopen('/path/to/file', 'r'));
 
@@ -555,7 +555,7 @@ $generator = function ($bytes) {
 }
 
 $stream = GuzzleHttp\Psr7\Utils::streamFor($generator(100));
-```
+\`\`\`
 
 
 ## `GuzzleHttp\Psr7\Utils::tryFopen`
@@ -770,20 +770,20 @@ Removes dot segments from a path and returns the new path according to
 
 Returns the target URI as a relative reference from the base URI. This method is the counterpart to resolve():
 
-```php
+\`\`\`php
 (string) $target === (string) UriResolver::resolve($base, UriResolver::relativize($base, $target))
-```
+\`\`\`
 
 One use-case is to use the current request URI as base URI and then generate relative links in your documents
 to reduce the document size or offer self-contained downloadable document archives.
 
-```php
+\`\`\`php
 $base = new Uri('http://example.com/a/b/');
 echo UriResolver::relativize($base, new Uri('http://example.com/a/b/c'));  // prints 'c'.
 echo UriResolver::relativize($base, new Uri('http://example.com/a/x/y'));  // prints '../x/y'.
 echo UriResolver::relativize($base, new Uri('http://example.com/a/b/?q')); // prints '?q'.
 echo UriResolver::relativize($base, new Uri('http://example.org/a/b/'));   // prints '//example.org/a/b/'.
-```
+\`\`\`
 
 ## Normalization and Comparison
 
