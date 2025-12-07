@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import type { ReactNode } from "react"
 
 interface User {
   id: string
@@ -9,8 +10,8 @@ interface User {
   name: string
   role: string
 }
-
 interface LoginResult {
+  error?: ReactNode
   success: boolean
   message?: string
   redirectTo?: string
@@ -20,16 +21,16 @@ interface LoginResult {
 /**
  * Helper to set authentication cookies
  */
-async function setAuthCookies(cookieStore: Promise<ReturnType<typeof cookies>>, token: string, user: User) {
-  const cookiesResolved = await cookieStore
+async function setAuthCookies(cookieStore: ReturnType<typeof cookies>, token: string, user: User) {
+  const cookiesResolved = cookieStore
   const isProduction = process.env.NODE_ENV === "production"
-  cookiesResolved.set("auth_token", token, {
+  ;(await cookiesResolved).set("auth_token", token, {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7, // 1 week
   })
-  cookiesResolved.set("user_data", JSON.stringify(user), {
+  ;(await cookiesResolved).set("user_data", JSON.stringify(user), {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
@@ -105,9 +106,9 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
  * Logout action - clears auth cookies and redirects to login page
  */
 export async function logoutUser(): Promise<void> {
-  const cookieStore = await cookies()
-  cookieStore.delete("auth_token")
-  cookieStore.delete("user_data")
+  const cookieStore = cookies()
+  ;(await cookieStore).delete("auth_token")
+  ;(await cookieStore).delete("user_data")
   redirect("/login")
 }
 
@@ -117,8 +118,8 @@ export async function logoutUser(): Promise<void> {
  */
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const cookieStore = await cookies()
-    const userData = cookieStore.get("user_data")
+    const cookieStore = cookies()
+    const userData = (await cookieStore).get("user_data")
 
     if (!userData) {
       return null

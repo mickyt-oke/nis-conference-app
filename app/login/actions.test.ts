@@ -1,8 +1,3 @@
-/**
- * Unit tests for app/login/actions.ts
- * These tests require jest and @testing-library/jest-dom @types to be installed.
- */
-
 import '@testing-library/jest-dom'
 import { loginAction, logoutUser, getCurrentUser, checkAuth, requireAuth, requireRole } from './actions'
 import { cookies } from 'next/headers'
@@ -37,8 +32,8 @@ describe('loginAction', () => {
       json: () => Promise.resolve(mockJsonResponse),
     })
 
-    const setMock = jest.fn();
-    (cookies as jest.Mock).mockReturnValue({
+    const setMock = jest.fn()
+    ;(cookies as jest.Mock).mockReturnValue({
       set: setMock,
     })
 

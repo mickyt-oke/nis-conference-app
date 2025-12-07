@@ -15,7 +15,8 @@ import Image from "next/image"
 export function LoginForm() {
   const { t } = useLanguage()
   const [showPassword, setShowPassword] = useState(false)
-  const [state, formAction, isPending] = useActionState(loginAction, null)
+  // fixed useActionState to handle form submission without state param mismatch error
+  const [state, formAction, isPending] = useActionState((state: any, formData: FormData) => loginAction(formData), null)
 
   return (
     <div className="max-w-md w-full space-y-8">
@@ -50,14 +51,14 @@ export function LoginForm() {
             )}
 
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                name="username"
+                id="email"
+                name="email"
                 type="text"
                 required
                 className="mt-1"
-                placeholder="Enter your username"
+                placeholder="Enter your email"
               />
             </div>
 
@@ -98,14 +99,14 @@ export function LoginForm() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          {/* <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">Test Credentials:</p>
             <div className="mt-2 text-xs text-gray-500 space-y-1">
-              <p>Admin: admin / admin123</p>
-              <p>Supervisor: supervisor / super123</p>
-              <p>User: user / user123</p>
+              <p>Admin: admin@nis.gov.ng / admin123</p>
+              <p>Supervisor: supervisor@nis.gov.ng / supervisor123</p>
+              <p>User: user@nis.gov.ng / user123</p>
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
