@@ -14,7 +14,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var string[]
      */
     protected $fillable = [
         'name',
@@ -34,20 +34,14 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    /**
-     * Get the identifier that will be stored in the JWT subject claim.
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+     /* Get the identifier that will be stored in the JWT subject claim.
      *
      * @return mixed
      */

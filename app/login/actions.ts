@@ -10,7 +10,7 @@ interface User {
   name: string
   role: string
 }
-interface LoginResult {
+export interface LoginResult {
   error?: ReactNode
   success: boolean
   message?: string
@@ -21,20 +21,19 @@ interface LoginResult {
 /**
  * Helper to set authentication cookies
  */
-async function setAuthCookies(cookieStore: ReturnType<typeof cookies>, token: string, user: User) {
-  const cookiesResolved = cookieStore
+function setAuthCookies(cookieStore: Awaited<ReturnType<typeof cookies>>, token: string, user: User) {
   const isProduction = process.env.NODE_ENV === "production"
-  ;(await cookiesResolved).set("auth_token", token, {
+  cookieStore.set("auth_token", token, {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7, // 1 week
   })
-  ;(await cookiesResolved).set("user_data", JSON.stringify(user), {
+  cookieStore.set("user_data", JSON.stringify(user), {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60 * 24 * 7, // 1 week
   })
 }
 
@@ -79,13 +78,28 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
 
     const data = await response.json()
 
-    const cookieStore = cookies()
+    // Validate API response structure
+    if (
+      !data ||
+      typeof data.token !== "string" ||
+      typeof data.user !== "object" ||
+      data.user === null ||
+      typeof data.user.id !== "string" ||
+      typeof data.user.email !== "string" ||
+      typeof data.user.name !== "string" ||
+      typeof data.user.role !== "string"
+    ) {
+      return {
+        success: false,
+        message: "Invalid response from server",
+      }
+    }
+
+    const cookieStore = await cookies()
     await setAuthCookies(cookieStore, data.token, data.user)
 
     // Determine redirect based on user role
-    let redirectTo = "/dashboard"
-    if (data.user.role === "admin") redirectTo = "/admin"
-    else if (data.user.role === "supervisor") redirectTo = "/supervisor"
+    const redirectTo = data.user.role === "admin" ? "/admin" : "/dashboard"
 
     return {
       success: true,
@@ -93,11 +107,15 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
       redirectTo,
       user: data.user,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Login error:", error)
+    let message = "An unexpected error occurred"
+    if (error && typeof error === "object" && "message" in error && typeof (error as any).message === "string") {
+      message = (error as { message: string }).message
+    }
     return {
       success: false,
-      message: error.message || "An unexpected error occurred",
+      message,
     }
   }
 }
@@ -106,9 +124,9 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
  * Logout action - clears auth cookies and redirects to login page
  */
 export async function logoutUser(): Promise<void> {
-  const cookieStore = cookies()
-  ;(await cookieStore).delete("auth_token")
-  ;(await cookieStore).delete("user_data")
+  const cookieStore = await cookies()
+  cookieStore.delete("auth_token")
+  cookieStore.delete("user_data")
   redirect("/login")
 }
 
@@ -118,8 +136,8 @@ export async function logoutUser(): Promise<void> {
  */
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const cookieStore = cookies()
-    const userData = (await cookieStore).get("user_data")
+    const cookieStore = await cookies()
+    const userData = cookieStore.get("user_data")
 
     if (!userData) {
       return null

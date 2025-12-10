@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -20,8 +21,10 @@ import {
   Eye,
 } from "lucide-react"
 import Link from "next/link"
+import { logoutUser } from "@/app/login/actions"
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const admin = await requireAuth()
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Admin Header */}

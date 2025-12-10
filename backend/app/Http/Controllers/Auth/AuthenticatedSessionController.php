@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Auth;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Handle an incoming authentication request.
+     * The authentication guard name.
      */
-    public function store(LoginRequest $request): Response
+    private const GUARD = 'web';
+    /**
+     * Handle an incoming authentication request.
+     *
+     * @param  \App\Http\Requests\Auth\LoginRequest  $request  The login request instance containing user credentials.
+     * @return \Illuminate\Http\Response  Returns a response with no content on successful authentication.
+     * @throws \Illuminate\Validation\ValidationException  If the authentication fails due to invalid credentials.
+     */
+    public function store(LoginRequest $request): \Symfony\Component\HttpFoundation\Response
     {
         $request->authenticate();
 
@@ -23,11 +31,15 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Log out the authenticated user and invalidate the session.
+     *
+     * @param \Illuminate\Http\Request $request The current HTTP request instance.
+     * @return \Illuminate\Http\Response
+     * @throws \Exception If session invalidation or token regeneration fails.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        Auth::guard('web')->logout();
+        Auth::guard(self::GUARD)->logout();
 
         $request->session()->invalidate();
 

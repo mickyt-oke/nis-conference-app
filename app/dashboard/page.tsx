@@ -132,6 +132,9 @@ export default async function DashboardPage() {
         </div>
 
         {/* Role-specific Actions */}
+        {/* WARNING: Client-side role checks are insufficient for security.
+            Ensure that server-side authorization checks exist in the /admin route handlers.
+            This UI check only hides elements and does not prevent unauthorized access. */}
         {user.role === "admin" && (
           <Card className="mt-8">
             <CardHeader>

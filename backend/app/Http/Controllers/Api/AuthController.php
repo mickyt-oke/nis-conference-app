@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
+/**
+ * Controller for handling authentication-related API requests.
+ */
 class AuthController extends Controller
 {
     /**
@@ -28,7 +31,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Could not create token'], 500);
         }
 
-        $user = Auth::user();
+        $user = JWTAuth::user();
 
         return response()->json([
             'token' => $token,
@@ -36,7 +39,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'email' => $user->email,
                 'name' => $user->name,
-                'role' => $user->role,
+                // 'role' => $user->role, // Removed for privacy
             ],
         ]);
     }
@@ -50,7 +53,11 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            JWTAuth::invalidate(JWTAuth::getToken());
+            $token = JWTAuth::getToken();
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 400);
+            }
+            JWTAuth::invalidate($token);
             return response()->json(['message' => 'Logged out']);
         } catch (JWTException $e) {
             return response()->json(['message' => 'Failed to logout, please try again.'], 500);
@@ -60,27 +67,39 @@ class AuthController extends Controller
     /**
      * Get the authenticated user.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function me()
+    public function me(Request $request)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
+            $token = JWTAuth::getToken();
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 400);
+            }
+            $user = JWTAuth::authenticate($token);
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
             return response()->json(['user' => $user]);
         } catch (JWTException $e) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => 'Invalid or expired token'], 401);
         }
     }
 
     /**
-     * Refresh a JWT token.
+     * Refresh a token.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function refresh()
     {
         try {
-            $token = JWTAuth::refresh(JWTAuth::getToken());
+            $currentToken = JWTAuth::getToken();
+            if (!$currentToken) {
+                return response()->json(['message' => 'Token not provided'], 400);
+            }
+            $token = JWTAuth::refresh($currentToken);
             return response()->json(['token' => $token]);
         } catch (JWTException $e) {
             return response()->json(['message' => 'Failed to refresh token'], 500);

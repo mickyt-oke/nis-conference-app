@@ -80,6 +80,20 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
+        $email = $this->input('email');
+        if (!is_string($email) || trim($email) === '') {
+            throw ValidationException::withMessages([
+                'email' => __('validation.required'),
+            ]);
+        }
+        // Optionally, add user agent for extra entropy
+        $userAgent = (string) $this->header('User-Agent');
+        return hash('sha256', Str::lower($email) . '|' . $userAgent);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw ValidationException::withMessages([
+                'email' => __('validation.email'),
+            ]);
+        }
+        return hash('sha256', Str::lower($email) . '|' . $this->ip());
     }
 }

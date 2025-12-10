@@ -12,11 +12,17 @@ import { loginAction } from "./actions"
 import { useActionState } from "react"
 import Image from "next/image"
 
+// Remove LoginFormState and use LoginResult directly
+import type { LoginResult } from "./actions";
+
 export function LoginForm() {
   const { t } = useLanguage()
   const [showPassword, setShowPassword] = useState(false)
-  // fixed useActionState to handle form submission without state param mismatch error
-  const [state, formAction, isPending] = useActionState((state: any, formData: FormData) => loginAction(formData), null)
+  // Use correct types for useActionState
+  const [state, formAction, isPending] = useActionState(
+    async (_state: LoginResult | null, formData: FormData) => loginAction(formData),
+    null as LoginResult | null
+  )
 
   return (
     <div className="max-w-md w-full space-y-8">
@@ -55,7 +61,7 @@ export function LoginForm() {
               <Input
                 id="email"
                 name="email"
-                type="text"
+                type="email"
                 required
                 className="mt-1"
                 placeholder="Enter your email"
@@ -71,6 +77,7 @@ export function LoginForm() {
                   type={showPassword ? "text" : "password"}
                   required
                   className="pr-10"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   placeholder="Enter your password"
                 />
                 <button
@@ -98,15 +105,6 @@ export function LoginForm() {
               )}
             </Button>
           </form>
-
-          {/* <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">Test Credentials:</p>
-            <div className="mt-2 text-xs text-gray-500 space-y-1">
-              <p>Admin: admin@nis.gov.ng / admin123</p>
-              <p>Supervisor: supervisor@nis.gov.ng / supervisor123</p>
-              <p>User: user@nis.gov.ng / user123</p>
-            </div>
-          </div> */}
         </CardContent>
       </Card>
     </div>
