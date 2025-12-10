@@ -57,12 +57,12 @@
     "less": "latest",
     "lightningcss": "latest",
     "lucide-react": "^0.454.0",
-    "next": "15.2.4",
+    "next": "16.0.7",
     "next-themes": "latest",
     "path": "latest",
-    "react": "^19",
+    "react": "19.2.1",
     "react-day-picker": "latest",
-    "react-dom": "^19",
+    "react-dom": "19.2.1",
     "react-hook-form": "latest",
     "react-resizable-panels": "latest",
     "recharts": "latest",
@@ -85,15 +85,21 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^22",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "autoprefixer": "^10.4.20",
     "cypress": "^15.7.0",
     "eslint": "^9",
-    "eslint-config-next": "^15.0.3",
+    "eslint-config-next": "16.0.7",
     "jest": "^30.2.0",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.7",
+      "@types/react-dom": "19.2.3"
+    }
   }
 }
