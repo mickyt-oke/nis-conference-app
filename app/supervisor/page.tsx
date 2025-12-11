@@ -32,11 +32,14 @@ import {
   AlertCircle,
   Download,
   Loader2,
+  LogOut
 } from "lucide-react"
 import Link from "next/link"
 import { Footer } from "@/components/footer"
 import { approveRegistration, rejectRegistration } from "./actions"
 import { useActionState } from "react"
+import { requireSupervisor } from "@/lib/auth"
+import { logoutUser } from "@/app/login/actions"
 
 interface PendingRegistration {
   id: string
@@ -61,7 +64,8 @@ interface PendingRegistration {
   budgetImpact: "low" | "medium" | "high"
 }
 
-export default function SupervisorDashboard() {
+export default async function SupervisorDashboard() {
+  const supervisor = await requireSupervisor()
   const [selectedRegistration, setSelectedRegistration] = useState<PendingRegistration | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
@@ -196,9 +200,13 @@ export default function SupervisorDashboard() {
               <Button variant="outline" asChild>
                 <Link href="/admin">Admin Portal</Link>
               </Button>
-              <Button variant="outline" asChild>
-                <Link href="/">← Back to Home</Link>
-              </Button>
+              {/* logout button */}
+              <form action={logoutUser}>
+                <Button variant="outline" size="sm">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+                </form>
             </div>
           </div>
         </div>

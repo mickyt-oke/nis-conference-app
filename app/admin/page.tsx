@@ -1,9 +1,10 @@
-import { requireAuth } from "@/lib/auth"
+import { requireAdmin } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { LogOut } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
   Users,
@@ -24,7 +25,7 @@ import Link from "next/link"
 import { logoutUser } from "@/app/login/actions"
 
 export default async function AdminDashboard() {
-  const admin = await requireAuth()
+  const admin = await requireAdmin()
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Admin Header */}
@@ -40,9 +41,12 @@ export default async function AdminDashboard() {
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/">View Site</Link>
-              </Button>
+              <form action={logoutUser}>
+                <Button variant="outline" size="sm">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </form>
             </div>
           </div>
         </div>

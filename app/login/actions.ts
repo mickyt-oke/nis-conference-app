@@ -23,18 +23,30 @@ export interface LoginResult {
  */
 function setAuthCookies(cookieStore: Awaited<ReturnType<typeof cookies>>, token: string, user: User) {
   const isProduction = process.env.NODE_ENV === "production"
-  cookieStore.set("auth_token", token, {
+  const commonOptions = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     maxAge: 60 * 60 * 24 * 7, // 1 week
-  })
-  cookieStore.set("user_data", JSON.stringify(user), {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-  })
+    path: "/",
+  }
+
+  // JWT for API calls (bearer)
+  cookieStore.set("auth_token", token, commonOptions)
+
+  // Raw user data (server side only)
+  cookieStore.set("user_data", JSON.stringify(user), commonOptions)
+
+  // Session cookie expected by lib/auth (used across dashboard)
+  cookieStore.set("session", JSON.stringify({
+    userId: user.id,
+    username: user.name,
+    email: user.email,
+    role: user.role,
+    name: user.name,
+    department: (user as any).department ?? "",
+    loginTime: new Date().toISOString(),
+  }), commonOptions)
 }
 
 /**
@@ -127,6 +139,7 @@ export async function logoutUser(): Promise<void> {
   const cookieStore = await cookies()
   cookieStore.delete("auth_token")
   cookieStore.delete("user_data")
+  cookieStore.delete("session")
   redirect("/login")
 }
 
@@ -161,11 +174,12 @@ export async function checkAuth(): Promise<boolean> {
 /**
  * Require authentication - redirects to login if not authenticated
  */
-export async function requireAuth(): Promise<void> {
-  const isAuthenticated = await checkAuth()
-  if (!isAuthenticated) {
+export async function requireAuth(): Promise<User> {
+  const user = await getCurrentUser()
+  if (!user) {
     redirect("/login")
   }
+  return user
 }
 
 /**

@@ -1,3 +1,5 @@
+"use server"
+
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
@@ -22,7 +24,7 @@ export async function getSession(): Promise<User | null> {
 
     return JSON.parse(sessionCookie.value)
   } catch (error) {
-    console.error("Session parsing error:", error)
+    console.error("Session parsing error:", error instanceof Error ? error.message : String(error))
     return null
   }
 }
