@@ -86,14 +86,13 @@ class LoginRequest extends FormRequest
                 'email' => __('validation.required'),
             ]);
         }
-        // Optionally, add user agent for extra entropy
-        $userAgent = (string) $this->header('User-Agent');
-        return hash('sha256', Str::lower($email) . '|' . $userAgent);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw ValidationException::withMessages([
                 'email' => __('validation.email'),
             ]);
         }
-        return hash('sha256', Str::lower($email) . '|' . $this->ip());
+        // Optionally, add user agent for extra entropy
+        $userAgent = (string) $this->header('User-Agent');
+        return hash('sha256', Str::lower($email) . '|' . $userAgent . '|' . $this->ip());
     }
 }

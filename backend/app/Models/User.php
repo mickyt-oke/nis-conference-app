@@ -21,6 +21,10 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'role',
+        'email_verified_at',
+        'verification_token',
+        'reset_token',
+        'reset_token_expires_at',
     ];
 
     /**
@@ -31,6 +35,8 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+        'verification_token',
+        'reset_token',
     ];
 
     /**
@@ -40,6 +46,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'reset_token_expires_at' => 'datetime',
     ];
      /* Get the identifier that will be stored in the JWT subject claim.
      *

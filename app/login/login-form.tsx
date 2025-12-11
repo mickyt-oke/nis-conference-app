@@ -9,20 +9,30 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Shield, Eye, EyeOff, Loader2 } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
 import { loginAction } from "./actions"
-import { useActionState } from "react"
+import { useActionState, useEffect } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 // Remove LoginFormState and use LoginResult directly
 import type { LoginResult } from "./actions";
 
 export function LoginForm() {
   const { t } = useLanguage()
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   // Use correct types for useActionState
   const [state, formAction, isPending] = useActionState(
     async (_state: LoginResult | null, formData: FormData) => loginAction(formData),
     null as LoginResult | null
   )
+
+  // Handle redirect after successful login
+  useEffect(() => {
+    if (state?.success && state.redirectTo) {
+      router.push(state.redirectTo)
+    }
+  }, [state, router])
 
   return (
     <div className="max-w-md w-full space-y-8">
@@ -50,9 +60,15 @@ export function LoginForm() {
         </CardHeader>
         <CardContent>
           <form action={formAction} className="space-y-6">
-            {state?.error && (
+            {/* Display disappearing error or success messages */}
+            {state?.message && !state.success && (
               <Alert variant="destructive">
-                <AlertDescription>{state.error}</AlertDescription>
+                <AlertDescription>{state.message}</AlertDescription>
+              </Alert>
+            )}
+            {state?.success && (
+              <Alert className="bg-green-50 border-green-200">
+                <AlertDescription className="text-green-800">{state.message}</AlertDescription>
               </Alert>
             )}
 
@@ -104,6 +120,15 @@ export function LoginForm() {
                 t("login")
               )}
             </Button>
+
+            <div className="flex items-center justify-between text-sm">
+              <Link href="/forgot-password" className="text-green-600 hover:underline">
+                Forgot password?
+              </Link>
+              <Link href="/admin/signup" className="text-green-600 hover:underline">
+                Admin signup
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

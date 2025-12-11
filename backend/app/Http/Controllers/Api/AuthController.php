@@ -36,10 +36,10 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user' => [
-                'id' => $user->id,
+                'id' => (string) $user->id,
                 'email' => $user->email,
                 'name' => $user->name,
-                // 'role' => $user->role, // Removed for privacy
+                'role' => $user->role ?? 'user',
             ],
         ]);
     }

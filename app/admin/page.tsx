@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <Badge variant="secondary">NIS Conference CMS v1.0</Badge>
+              <Badge variant="secondary">NIS Conference CMS</Badge>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="outline" size="sm">

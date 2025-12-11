@@ -95,11 +95,20 @@ export default function RegisterPage() {
           </Alert>
         )}
 
-        {state?.error && (
+        {state && !state.success && (
           <Alert className="mb-8 border-red-200 bg-red-50">
             <AlertCircle className="h-4 w-4 text-red-600" />
             <AlertDescription className="text-red-800">
               <strong>Registration Failed:</strong> {state.message}
+              {state.errors && Object.keys(state.errors).length > 0 && (
+                <ul className="mt-2 list-disc pl-5">
+                  {Object.entries(state.errors).map(([field, messages]: [string, any]) => (
+                    <li key={field}>
+                      {Array.isArray(messages) ? messages.join(", ") : messages}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </AlertDescription>
           </Alert>
         )}

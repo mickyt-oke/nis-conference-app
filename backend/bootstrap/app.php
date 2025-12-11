@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
 
+        // Exclude API routes from CSRF verification (JWT handles authentication)
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
+
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
