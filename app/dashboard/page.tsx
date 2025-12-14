@@ -9,7 +9,7 @@ import { logoutUser } from "@/app/login/actions"
 export default async function DashboardPage() {
   const user = await requireAuth()
 
-  return (
+  return ( 
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
                   Logout
                 </Button>
               </form>
-              
+
             </div>
           </div>
         </div>
